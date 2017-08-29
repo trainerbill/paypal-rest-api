@@ -1,34 +1,102 @@
-[![Build Status](https://travis-ci.org/{{github-user-name}}/{{github-app-name}}.svg?branch=master)](https://travis-ci.org/{{github-user-name}}/{{github-app-name}}.svg?branch=master)
-[![Coverage Status](https://coveralls.io/repos/github/{{github-user-name}}/{{github-app-name}}/badge.svg?branch=master)](https://coveralls.io/github/{{github-user-name}}/{{github-app-name}}?branch=master)
+[![Build Status](https://travis-ci.org/trainerbill/paypal-rest-api.svg?branch=master)](https://travis-ci.org/trainerbill/paypal-rest-api)
+[![Coverage Status](https://coveralls.io/repos/github/trainerbill/paypal-rest-api/badge.svg?branch=master)](https://coveralls.io/github/trainerbill/paypal-rest-api?branch=master)
+[![npm version](https://badge.fury.io/js/paypal-rest-api.svg)](https://badge.fury.io/js/paypal-rest-api)
+[![Dependency Status](https://david-dm.org/trainerbill/paypal-rest-api.svg)](https://david-dm.org/trainerbill/paypal-rest-api)
+[![devDependency Status](https://david-dm.org/trainerbill/paypal-rest-api/dev-status.svg)](https://david-dm.org/trainerbill/paypal-rest-api#info=devDependencies)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 
-# Using this module in other modules
+## Introduction
 
-Here is a quick example of how this module can be used in other modules. The [TypeScript Module Resolution Logic](https://www.typescriptlang.org/docs/handbook/module-resolution.html) makes it quite easy. The file `src/index.ts` is a [barrel](https://basarat.gitbooks.io/typescript/content/docs/tips/barrel.html) that re-exports selected exports from other files. The _package.json_ file contains `main` attribute that points to the generated `lib/index.js` file and `typings` attribute that points to the generated `lib/index.d.ts` file.
+This package is *NOT* supported by PayPal.  The current [PayPal Node SDK](https://github.com/paypal/PayPal-node-SDK) does not support the newest Javascript features.  This package is intended to support the most cutting edge Javascript features.
 
-> If you are planning to have code in multiple files (which is quite natural for a NodeJS module) that users can import, make sure you update `src/index.ts` file appropriately.
+## Main Features
 
-Now assuming you have published this amazing module to _npm_ with the name `my-amazing-lib`, and installed it in the module in which you need it -
+- Written in Typescript and provide [api types externally](https://github.com/trainerbill/paypal-rest-api/tree/master/src/apitypes)
+- Native Promise support using the [request retry library](https://github.com/FGRibreau/node-request-retry)
+- Retry failed api calls automatically using [request retry library](https://github.com/FGRibreau/node-request-retry) and [paypal idempotency](https://developer.paypal.com/docs/integration/direct/express-checkout/integration-jsv4/best-practices/#process)
+- Store access token expiration date and check before sending request.  Currently the paypal sdk only updates the token if the request fails.  This is more efficient.
+- Api Pre Validation using [Joi Schemas](https://github.com/trainerbill/paypal-rest-api/tree/master/src/joi).  This improves efficiency by preventing invalid api calls from being submitted.
+- High Unit test coverage.
+- Provide request function to submit any URL.  Future proofs in case helper method is not available.
+- [Mocks](https://github.com/trainerbill/paypal-rest-api/tree/master/src/mocks) for testing.
 
-- To use the `Greeter` class in a TypeScript file -
-
-```ts
-import { Greeter } from "my-amazing-lib";
-
-const greeter = new Greeter("World!");
-greeter.greet();
+## Installation
+```
+npm install --save paypal-rest-api
 ```
 
-- To use the `Greeter` class in a JavaScript file -
+## Configuration
+The most up to date configuration options can be found on the [IConfigureOptions interface](https://github.com/trainerbill/paypal-rest-api/blob/master/src/api.ts)
+```
+import { PayPalRestApi } from "../src";
 
-```js
-const Greeter = require('my-amazing-lib').Greeter;
-
-const greeter = new Greeter('World!');
-greeter.greet();
+const paypal = new PayPalRestApi({
+    client_id: "",  // Your paypal client id
+    client_secret": "", // Your paypal client secret
+    mode: "sandbox", // "production" or "sandbox"
+    requestOptions: {
+        maxRetries: 2, // Sets the number of retries for 500 or Network timeout.  Set to 0 to disable.
+        retryDelay: 5000, // Microseconds to wait until next retry.  5000 = 5 seconds
+        // Any options from the following
+        // https://github.com/FGRibreau/node-request-retry
+        // https://github.com/request/request
+    },
+    validate: true, // Turns on prevalidation.  set to false if your validations are false negative.  Only available in execute method.
+});
 ```
 
-## Setting travis and coveralls badges
-1. Sign in to [travis](https://travis-ci.org/) and activate the build for your project.
-2. Sign in to [coveralls](https://coveralls.io/) and activate the build for your project.
-3. Replace {{github-user-name}}/{{github-app-name}} with your repo details like: "ospatil/generator-node-typescript".
+## Usage
+There are 2 different methods to make API Calls. For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
+
+### Run an example
+```
+// "examples/ANY_FILE_IN_EXAMPLES_FOLDER"
+npm run example -- examples/request
+```
+
+### Execute Method
+The execute method can be executed for any api call that has a [helper method](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/src/helpers.ts).
+```
+import { PayPalRestApi } from "../src";
+
+const paypal = new PayPalRestApi({
+    client_id: "YOUR_CLIENT_ID",
+    client_secret": "YOUR_CLIENT_SECRET",
+    mode: "sandbox",
+});
+
+paypal.execute("createInvoice", {
+    body: {
+        // https://developer.paypal.com/docs/api/invoicing/#invoices_create
+        merchant_info: {
+            business_name: "testy",
+        },
+    },
+})
+.then((response) => console.log)
+.catch((err) => console.error);
+```
+
+### Request Method
+If a helper method does not exist you can always use the request method to directly execute an API call to an endpoint.  You must specify the path and method.
+
+```
+import { PayPalRestApi } from "../src";
+
+const paypal = new PayPalRestApi({
+    client_id: "YOUR_CLIENT_ID",
+    client_secret": "YOUR_CLIENT_SECRET",
+    mode: "sandbox",
+});
+
+paypal.request("v1/invoicing/invoices/", {
+    body: {
+        merchant_info: {
+            business_name: "testy",
+        },
+    },
+    method: "POST",
+})
+.then((response) => console.log)
+.catch((err) => console.error);
+```

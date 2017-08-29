@@ -5,36 +5,26 @@ import * as retry from "requestretry";
 // tslint:disable-next-line:no-submodule-imports
 import * as uuid from "uuid/v1";
 import * as types from "./apitypes";
+import * as helpers from "./helpers";
 import * as schemas from "./joi";
 
 export type IRetryStrategy = (err: Error, response: http.IncomingMessage, body: any) => boolean;
-
-export interface IRequestRetryOptions extends request.CoreOptions {
-  maxAttempts?: number;
-  retryDelay?: number;
-  retryStrategy?: IRetryStrategy;
-}
 
 export interface IConfigureOptions {
   client_id: string;
   client_secret: string;
   mode: string;
-  requestOptions?: IRequestRetryOptions;
+  requestOptions?: retry.RequestRetryOptions;
+  validate?: boolean;
 }
 
-interface IAccessTokenResponse {
+export interface IAccessToken {
   scope: string;
   access_token: string;
   token_type: string;
   app_id: string;
-  expires_in: string;
-  expiration?: Date;
-}
-
-export interface IApiConfiguration {
-  options: IRequestRetryOptions;
-  path: string;
-  schema?: joi.Schema;
+  expires_in: number;
+  expiration: number;
 }
 
 export class PayPalRestApi {
@@ -51,10 +41,9 @@ export class PayPalRestApi {
     "EPIPE",
     "EAI_AGAIN",
   ];
-  private apis: Map<string, IApiConfiguration> = new Map();
 
   constructor(config: IConfigureOptions) {
-    const defaultRequestOptions: IRequestRetryOptions = {
+    const defaultRequestOptions: retry.RequestRetryOptions = {
       headers: {
         "Accept": "application/json",
         "Accept-Language": "en_US",
@@ -62,6 +51,9 @@ export class PayPalRestApi {
       },
       json: true,
       maxAttempts: 1,
+      promiseFactory: (resolver) => {
+        return new Promise(resolver);
+      },
     };
     this.hostname = config.mode === "production" ? "api.paypal.com" : "api.sandbox.paypal.com";
     config.requestOptions = {
@@ -74,40 +66,19 @@ export class PayPalRestApi {
     }
 
     this.config = validateConfig.value;
-
-    this.apis.set("getAccessToken", {
-      options: {
-        auth: {
-          password: this.config.client_secret,
-          user: this.config.client_id,
-        },
-        form: {
-          grant_type: "client_credentials",
-        },
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        json: true,
-        method: "POST",
-      },
-      path: "v1/oauth2/token",
-    });
-
-    this.apis.set("createInvoice", {
-      options: {
-        json: true,
-        method: "POST",
-      },
-      path: "v1/invoicing/invoices",
-      schema: schemas.paypalInvoiceSchema,
-    });
   }
 
-  public async request(path: string, options?: IRequestRetryOptions) {
-    if (this.apis.get("getAccessToken").path !== path) {
+  public setAccessToken(token: IAccessToken) {
+    token.expiration = new Date().setSeconds(token.expires_in);
+    this.accessToken = token;
+  }
+
+  public async request(path: string, options?: retry.RequestRetryOptions) {
+    if (helpers.helpers.get("getAccessToken")(this.config).path !== path) {
       // tslint:disable-next-line:max-line-length
-      if (!this.accessToken || !this.accessToken.access_token || !this.accessToken.expiration || Date.now() > this.accessToken.expiration) {
-        this.accessToken = await this.execute("getAccessToken");
+      if (!this.accessToken || !this.accessToken.access_token || !this.accessToken.expiration || this.accessTokenExpired()) {
+        const res = await this.execute("getAccessToken");
+        this.setAccessToken(res.body);
       }
       options.headers = {
         ...options.headers,
@@ -134,25 +105,35 @@ export class PayPalRestApi {
       response = await retry.post(requestOptions);
     } else if (requestOptions.method === "GET") {
       response = await retry.get(requestOptions);
+    } else {
+      throw new Error(`Method ${requestOptions.method} is not configured.`);
     }
     return (response as any);
   }
 
-  public async execute(id: string, options?: IRequestRetryOptions) {
-    const api = this.apis.get(id);
-    if (!api) {
-      throw new Error(`${id} api is not configured.  Use the request method instead.`);
+  public async execute(id: string, options?: retry.RequestRetryOptions) {
+    const helper = helpers.helpers.get(id);
+    if (!helper) {
+      throw new Error(`${id} helper is not configured.  Use the request method instead.`);
     }
-    if (options && options.body && api.schema) {
-      const validate = joi.validate(options.body, api.schema);
+    const ihelper = helper(this.config);
+    if (this.config.validate && options && options.body && ihelper.schema) {
+      const validate = joi.validate(options.body, ihelper.schema);
       if (validate.error) {
         throw validate.error;
       }
       options.body = validate.value;
     }
-    return await this.request(api.path, {
-        ...api.options,
+    return await this.request(ihelper.path, {
+        ...ihelper.options,
         ...options,
       });
+  }
+
+  private accessTokenExpired() {
+    if (Date.now() > this.accessToken.expiration) {
+      return true;
+    }
+    return false;
   }
 }
