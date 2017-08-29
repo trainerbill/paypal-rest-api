@@ -7,7 +7,7 @@
 
 ## Introduction
 
-This package is *NOT* supported by PayPal.  The current [PayPal Node SDK](https://github.com/paypal/PayPal-node-SDK) does not support the newest Javascript features.  This package is intended to support the most cutting edge Javascript features.
+This package is **NOT** supported by PayPal.  The current [PayPal Node SDK](https://github.com/paypal/PayPal-node-SDK) does not support the newest Javascript features.  This package is intended to support the most cutting edge Javascript features.
 
 ## Main Features
 
