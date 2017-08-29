@@ -71,7 +71,7 @@ import { PayPalRestApi } from "../src";
 
 const paypal = new PayPalRestApi({
     client_id: "YOUR_CLIENT_ID",
-    client_secret": "YOUR_CLIENT_SECRET",
+    client_secret: "YOUR_CLIENT_SECRET",
     mode: "sandbox",
 });
 
@@ -95,7 +95,7 @@ import { PayPalRestApi } from "../src";
 
 const paypal = new PayPalRestApi({
     client_id: "YOUR_CLIENT_ID",
-    client_secret": "YOUR_CLIENT_SECRET",
+    client_secret: "YOUR_CLIENT_SECRET",
     mode: "sandbox",
 });
 

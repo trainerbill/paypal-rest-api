@@ -1,6 +1,41 @@
 import * as joi from "joi";
 import * as common from "./common";
 
+// tslint:disable:object-literal-sort-keys
+export const invoiceSearchRequestSchema = joi.object().keys({
+    email: joi.string().optional(),
+    recipient_first_name: joi.string().optional(),
+    recipient_last_name: joi.string().optional(),
+    recipient_business_name: joi.string().optional(),
+    number: joi.string().optional(),
+    status : joi.array().valid([
+        "DRAFT",
+        "SENT",
+        "PARTIALLY_PAID",
+        "PAYMENT_PENDING",
+        "PAID",
+        "MARKED_AS_PAID",
+        "CANCELLED",
+        "REFUNDED",
+        "PARTIALLY_REFUNDED",
+        "MARKED_AS_REFUNDED",
+    ]).min(1).optional(),
+    lower_total_amount: joi.string().optional(),
+    upper_total_amount: joi.string().optional(),
+    start_invoice_date: joi.string().optional(),
+    end_invoice_date: joi.string().optional(),
+    start_due_date: joi.string().optional(),
+    end_due_date: joi.string().optional(),
+    start_payment_date: joi.string().optional(),
+    end_payment_date: joi.string().optional(),
+    start_creation_date : joi.string().optional(),
+    end_creation_date : joi.string().optional(),
+    page: joi.number().min(0).optional(),
+    page_size: joi.number().min(1).optional(),
+    total_count_required: joi.boolean().optional(),
+    archived: joi.boolean().optional(),
+}).min(1);
+
 export const paypalInvoiceItemsSchema = joi.object().keys({
     date: joi.date().empty("").optional(),
     description: joi.string().trim().empty("").max(1000).optional(),
@@ -75,3 +110,5 @@ export const paypalInvoiceSchema = joi.object().keys({
     template_id: joi.string().trim().empty("").optional(),
     terms: joi.string().trim().empty("").max(4000).optional(),
 });
+
+// tslint:enable:object-literal-sort-keys

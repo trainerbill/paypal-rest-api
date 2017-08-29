@@ -8,7 +8,9 @@ import * as types from "./apitypes";
 import * as helpers from "./helpers";
 import * as schemas from "./joi";
 
-export type IRetryStrategy = (err: Error, response: http.IncomingMessage, body: any) => boolean;
+export interface IHelperRequestOptions extends retry.RequestRetryOptions {
+  helperparams?: any;
+}
 
 export interface IConfigureOptions {
   client_id: string;
@@ -41,6 +43,7 @@ export class PayPalRestApi {
     "EPIPE",
     "EAI_AGAIN",
   ];
+  private accessTokenHelper: helpers.IHelper;
 
   constructor(config: IConfigureOptions) {
     const defaultRequestOptions: retry.RequestRetryOptions = {
@@ -66,6 +69,10 @@ export class PayPalRestApi {
     }
 
     this.config = validateConfig.value;
+    this.accessTokenHelper = helpers.helpers.get("getAccessToken")({
+        client_id: this.config.client_id,
+        client_secret: this.config.client_secret,
+    });
   }
 
   public setAccessToken(token: IAccessToken) {
@@ -74,10 +81,10 @@ export class PayPalRestApi {
   }
 
   public async request(path: string, options?: retry.RequestRetryOptions) {
-    if (helpers.helpers.get("getAccessToken")(this.config).path !== path) {
+    if (this.accessTokenHelper.path !== path) {
       // tslint:disable-next-line:max-line-length
       if (!this.accessToken || !this.accessToken.access_token || !this.accessToken.expiration || this.accessTokenExpired()) {
-        const res = await this.execute("getAccessToken");
+        const res = await this.request(this.accessTokenHelper.path, this.accessTokenHelper.options);
         this.setAccessToken(res.body);
       }
       options.headers = {
@@ -111,12 +118,13 @@ export class PayPalRestApi {
     return (response as any);
   }
 
-  public async execute(id: string, options?: retry.RequestRetryOptions) {
+  public async execute(id: string, options?: IHelperRequestOptions) {
     const helper = helpers.helpers.get(id);
     if (!helper) {
       throw new Error(`${id} helper is not configured.  Use the request method instead.`);
     }
-    const ihelper = helper(this.config);
+    const ihelper = helper(options.helperparams);
+
     if (this.config.validate && options && options.body && ihelper.schema) {
       const validate = joi.validate(options.body, ihelper.schema);
       if (validate.error) {
@@ -125,9 +133,9 @@ export class PayPalRestApi {
       options.body = validate.value;
     }
     return await this.request(ihelper.path, {
-        ...ihelper.options,
-        ...options,
-      });
+      ...ihelper.options,
+      ...(options as retry.RequestRetryOptions),
+    });
   }
 
   private accessTokenExpired() {
