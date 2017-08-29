@@ -11,7 +11,8 @@ This package is *NOT* supported by PayPal.  The current [PayPal Node SDK](https:
 
 ## Main Features
 
-- Written in Typescript and provide [api types externally](https://github.com/trainerbill/paypal-rest-api/tree/master/src/apitypes)
+- Non-Singleton which allows for the use of multiple paypal rest applications.  Necessary for multi-currency support.
+- Written in Typescript and provides [api types externally](https://github.com/trainerbill/paypal-rest-api/tree/master/src/apitypes)
 - Native Promise support using the [request retry library](https://github.com/FGRibreau/node-request-retry)
 - Retry failed api calls automatically using [request retry library](https://github.com/FGRibreau/node-request-retry) and [paypal idempotency](https://developer.paypal.com/docs/integration/direct/express-checkout/integration-jsv4/best-practices/#process)
 - Store access token expiration date and check before sending request.  Currently the paypal sdk only updates the token if the request fails.  This is more efficient.
@@ -46,13 +47,19 @@ const paypal = new PayPalRestApi({
 ```
 
 ## Usage
-There are 2 different methods to make API Calls. For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
+There are 2 different methods to make API Calls. For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).  View the [common.js file](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/common.js) for a CommonJS example using require.
 
 ### Run an example
+It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.
+
+#### Command line
 ```
 // "examples/ANY_FILE_IN_EXAMPLES_FOLDER"
 npm run example -- examples/request
 ```
+
+#### VSCode
+Switch to the Debugger.  Open the example file you want to run, select the "Launch Example File" configuration and select run.
 
 ### Execute Method
 The execute method can be executed for any api call that has a [helper method](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/src/helpers.ts).
