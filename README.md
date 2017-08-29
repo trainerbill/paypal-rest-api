@@ -46,20 +46,20 @@ const paypal = new PayPalRestApi({
 });
 ```
 
-## Usage
-There are 2 different methods to make API Calls. For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).  View the [common.js file](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/common.js) for a CommonJS example using require.
-
-### Run an example
+## Run an example
 It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.
 
-#### Command line
+### Command line
 ```
 // "examples/ANY_FILE_IN_EXAMPLES_FOLDER"
 npm run example -- examples/request
 ```
 
-#### VSCode
+### VSCode
 Switch to the Debugger.  Open the example file you want to run, select the "Launch Example File" configuration and select run.
+
+## Usage
+There are 2 different methods to make API Calls. For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).  View the [common.js file](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/common.js) for a CommonJS example using require.
 
 ### Execute Method
 The execute method can be executed for any api call that has a [helper method](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/src/helpers.ts).
