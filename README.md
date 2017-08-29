@@ -26,6 +26,9 @@ This package is **NOT** supported by PayPal.  The current [PayPal Node SDK](http
 npm install --save paypal-rest-api
 ```
 
+## Typescript vs CommonJS
+All examples in this README are using Typescript, however this module can be included in CommonJS(require) as well.  See the [common.js example](https://github.com/trainerbill/paypal-rest-api/blob/master/examples/common.js) for how to use CommonJS with this module.
+
 ## Configuration
 The most up to date configuration options can be found on the [IConfigureOptions interface](https://github.com/trainerbill/paypal-rest-api/blob/master/src/api.ts)
 ```
