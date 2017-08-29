@@ -1,12 +1,17 @@
 {
   "name": "paypal-rest-api",
   "version": "0.0.2",
-  "description": "paypal-rest-api",
+  "description": "A typescript module for integrating with PayPal REST APIs.",
   "license": "MIT",
-  "repository": "",
-  "author": "",
+  "repository": "https://github.com/trainerbill/paypal-rest-api",
+  "author": "Andrew Throener",
   "keywords": [
-    ""
+    "PayPal",
+    "rest",
+    "api",
+    "es6",
+    "typescript",
+    "sdk"
   ],
   "files": [
     "lib"
