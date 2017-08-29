@@ -1,0 +1,63 @@
+{
+  "name": "paypal-rest-api",
+  "version": "0.0.0",
+  "description": "paypal-rest-api",
+  "license": "MIT",
+  "repository": "",
+  "author": "",
+  "keywords": [
+    ""
+  ],
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "clean": "rimraf lib coverage",
+    "lint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "build": "npm run clean && npm run lint && echo Using TypeScript && tsc --version && tsc --pretty",
+    "test": "nyc tape test/**/*-spec.ts | tap-spec; nyc report ---reporter=text",
+    "watch": "npm run build -- --watch",
+    "watch:test": "npm run test -- --watch",
+    "release": "npm test && npm run build && npm version --",
+    "release:quick": "npm test && npm run build && git add -A && git commit -m 'Quick Release Patch' && npm version patch && git push --tags",
+    "postversion": "npm publish && git push && git push --tags",
+    "reinstall": "rimraf node_modules package-lock.json && npm install",
+    "start": "ts-node -r dotenv/config ./test/server.ts"
+  },
+  "dependencies": {
+    "@types/requestretry": "^1.12.1",
+    "hoek": "^4.2.0",
+    "joi": "^10.6.0",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4",
+    "requestretry": "^1.12.2",
+    "us": "^2.0.0",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/blue-tape": "^0.1.31",
+    "@types/hoek": "^4.1.3",
+    "@types/joi": "^10.4.1",
+    "@types/node": "^7.0.0",
+    "@types/request": "^2.0.3",
+    "@types/request-promise-native": "^1.0.6",
+    "@types/sinon": "^2.3.3",
+    "@types/uuid": "^3.4.1",
+    "blue-tape": "^1.0.0",
+    "coveralls": "^2.0.0",
+    "nyc": "^10.0.0",
+    "prettier": "^1.5.2",
+    "rimraf": "^2.0.0",
+    "sinon": "^3.2.1",
+    "tap-spec": "^4.1.1",
+    "ts-node": "^3.3.0",
+    "tslint": "^5.0.0",
+    "tslint-config-prettier": "^1.1.0",
+    "typescript": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  }
+}
