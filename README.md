@@ -87,7 +87,7 @@ paypal.execute("createInvoice", {
 .catch((err) => console.error);
 ```
 
-### Request Method
+### Request Method 
 If a helper method does not exist you can always use the request method to directly execute an API call to an endpoint.  You must specify the path and method.
 
 ```
