@@ -7,6 +7,5 @@ node_js:
   - '4'
 script:
   - npm test  # build and test
-  - npm run coverage  # generate nyc report
 after_script:
   - 'cat coverage/lcov.info | ./node_modules/.bin/coveralls' # sends the coverage report to coveralls
