@@ -43,10 +43,11 @@ export class PayPalRestApi {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       json: true,
-      maxAttempts: 1,
+      maxAttempts: 5,
       promiseFactory: (resolver) => {
         return new Promise(resolver);
       },
+      retryDelay: 200,
     };
     this.hostname = config.mode === "production" ? "api.paypal.com" : "api.sandbox.paypal.com";
     config.requestOptions = {

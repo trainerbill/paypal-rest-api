@@ -86,7 +86,6 @@ helpers.set("getInvoice", (config) => {
     config = validate.value;
     return {
         options: {
-            json: true,
             method: "GET",
         },
         path: `v1/invoicing/invoices/${config.invoiceid}`,
@@ -96,7 +95,6 @@ helpers.set("getInvoice", (config) => {
 helpers.set("listInvoice", (config) => {
     return {
         options: {
-            json: true,
             method: "GET",
         },
         path: `v1/invoicing/invoices`,
@@ -106,10 +104,28 @@ helpers.set("listInvoice", (config) => {
 helpers.set("searchInvoice", (config) => {
     return {
         options: {
-            json: true,
             method: "POST",
         },
         path: `v1/invoicing/search`,
         schema: schemas.invoiceSearchRequestSchema,
+    };
+});
+
+helpers.set("createPayment", (config) => {
+    return {
+        options: {
+            method: "POST",
+        },
+        path: `v1/payments/payment`,
+        schema: schemas.paypalPaymentSchema,
+    };
+});
+
+helpers.set("verifyWebhook", (config) => {
+    return {
+        options: {
+            method: "POST",
+        },
+        path: "v1/notifications/verify-webhook-signature",
     };
 });
