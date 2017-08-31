@@ -6,37 +6,59 @@ import { config } from "./config";
 
 tape("request method", async (t) => {
 
-  t.test("with no access token should", async (st) => {
+  t.test("failure should", async (st) => {
     const sandbox = sinon.sandbox.create();
     const paypal = new PayPalRestApi(config);
-    const postStub = sandbox.stub(request, "post");
-    const executeStub = sandbox.stub(paypal, "execute").resolves({
-      body: {
-        access_token: "testy",
-        expires_in: 200,
-      },
+    const error = { message: "error" };
+    const postStub = sandbox.stub(request, "post").rejects(error);
+    try {
+      const response = await paypal.request("/testurl", {
+        body: {
+          test: "test",
+        },
+        method: "POST",
+      });
+      st.fail("not succeed");
+    } catch (err) {
+      st.equal(err === error, true, "throw error");
+    }
+    sandbox.restore();
+  });
+
+  t.test("with valid access token", async (st) => {
+    const sandbox = sinon.sandbox.create();
+    const paypal = new PayPalRestApi(config);
+    paypal.setAccessToken({
+      access_token: "testy",
+      app_id: "test",
+      expires_in: 200000,
+      scope: "test",
+      token_type: "test",
     });
+    const postStub = sandbox.stub(request, "post");
+
+    postStub
+      .onCall(0)
+      .resolves({
+        id: "invoiceid",
+      });
+
     const req = {
       merchant_info: {
         business_name: "testy",
       },
     };
-
-    postStub
-      .returns({
-        id: "invoiceid",
-      });
     try {
       const response = await paypal.request("/testurl", {
         body: req,
         method: "POST",
       });
-      t.pass("succeed");
+      st.pass("succeed");
     } catch (err) {
-      t.fail(`not throw an error: ${err.message}`);
+      st.fail(`not throw an error: ${err.message}`);
     }
-    t.equal(executeStub.withArgs("getAccessToken").called, true, "get an access token");
-    t.equal(postStub.withArgs(sinon.match({
+    st.equal(postStub.calledOnce, true, "make one request");
+    st.equal(postStub.withArgs(sinon.match({
       body: req,
       headers: {
         Authorization: "Bearer testy",
@@ -45,44 +67,48 @@ tape("request method", async (t) => {
     sandbox.restore();
   });
 
-  t.test("with access token should", async (st) => {
+  t.test("with no access token", async (st) => {
     const sandbox = sinon.sandbox.create();
     const paypal = new PayPalRestApi(config);
     const postStub = sandbox.stub(request, "post");
-    const executeStub = sandbox.stub(paypal, "execute").resolves({
-      body: {
-        access_token: "testy",
-        expires_in: 200,
-      },
-    });
+    postStub
+      .onCall(0)
+      .resolves({
+        body: {
+          access_token: "testy",
+          expires_in: 200,
+        },
+      });
+
+    postStub
+      .onCall(1)
+      .returns({
+        id: "invoiceid",
+      });
+
     const req = {
       merchant_info: {
         business_name: "testy",
       },
     };
-    postStub
-      .onCall(0)
-      .returns({
-        id: "invoiceid",
-      });
     try {
-      let response = await paypal.request("/testurl", {
+      const response = await paypal.request("/testurl", {
         body: req,
         method: "POST",
       });
-      postStub.reset();
-      executeStub.reset();
-      response = await paypal.request("/testurl", {
-        body: req,
-        method: "POST",
-      });
-      t.pass("succeed");
+      st.pass("succeed");
     } catch (err) {
-      t.fail(`not throw an error: ${err.message}`);
+      st.fail(`not throw an error: ${err.message}`);
     }
-
-    t.equal(executeStub.called, false, "not get an access token");
-    t.equal(postStub.withArgs(sinon.match({
+    st.equal(postStub.calledTwice, true, "make two requests");
+    st.equal(postStub.withArgs(sinon.match({
+      auth: {
+        password: config.client_secret,
+        user: config.client_id,
+      },
+      uri: "https://api.sandbox.paypal.com/v1/oauth2/token",
+    })).called, true, "get an access token");
+    st.equal(postStub.withArgs(sinon.match({
       body: req,
       headers: {
         Authorization: "Bearer testy",
@@ -94,35 +120,55 @@ tape("request method", async (t) => {
   t.test("with expired access token should", async (st) => {
     const sandbox = sinon.sandbox.create();
     const paypal = new PayPalRestApi(config);
-    const postStub = sandbox.stub(request, "post");
-    const executeStub = sandbox.stub(paypal, "execute").resolves({
-      body: {
-        access_token: "testy",
-        expires_in: -2,
-      },
+    paypal.setAccessToken({
+      access_token: "testy",
+      app_id: "test",
+      expires_in: -2,
+      scope: "test",
+      token_type: "test",
     });
+
+    const postStub = sandbox.stub(request, "post");
+    postStub
+      .onCall(0)
+      .resolves({
+        body: {
+          access_token: "testy",
+          expires_in: 200,
+        },
+      });
+
+    postStub
+      .onCall(1)
+      .returns({
+        id: "invoiceid",
+      });
+
     const req = {
       merchant_info: {
         business_name: "testy",
       },
     };
-    postStub
-      .onCall(0)
-      .returns({
-        id: "invoiceid",
-      });
+
     try {
       const response = await paypal.request("/testurl", {
         body: req,
         method: "POST",
       });
-      t.pass("succeed");
+      st.pass("succeed");
     } catch (err) {
-      t.fail(`not throw an error: ${err.message}`);
+      st.fail(`not throw an error: ${err.message}`);
     }
 
-    t.equal(executeStub.called, true, "get an access token");
-    t.equal(postStub.withArgs(sinon.match({
+    st.equal(postStub.calledTwice, true, "make two requests");
+    st.equal(postStub.withArgs(sinon.match({
+      auth: {
+        password: config.client_secret,
+        user: config.client_id,
+      },
+      uri: "https://api.sandbox.paypal.com/v1/oauth2/token",
+    })).called, true, "get an access token");
+    st.equal(postStub.withArgs(sinon.match({
       body: req,
       headers: {
         Authorization: "Bearer testy",

@@ -26,23 +26,13 @@ export interface IAccessToken {
   token_type: string;
   app_id: string;
   expires_in: number;
-  expiration: number;
+  expiration?: number;
 }
 
 export class PayPalRestApi {
   private config: IConfigureOptions;
   private hostname: string;
   private accessToken: any;
-  private retriableErrors = [
-    "ECONNRESET",
-    "ENOTFOUND",
-    "ESOCKETTIMEDOUT",
-    "ETIMEDOUT",
-    "ECONNREFUSED",
-    "EHOSTUNREACH",
-    "EPIPE",
-    "EAI_AGAIN",
-  ];
   private accessTokenHelper: helpers.IHelper;
 
   constructor(config: IConfigureOptions) {
