@@ -19,6 +19,7 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
+    "coverage": "npm test | coveralls",
     "clean": "rimraf lib coverage",
     "lint": "tslint --force --format verbose \"src/**/*.ts\"",
     "build": "npm run clean && npm run lint && echo Using TypeScript && tsc --version && tsc --pretty",
