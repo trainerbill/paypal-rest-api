@@ -1,9 +1,9 @@
-import { PayPalRestApi } from "../../src";
-import { config } from "../config";
+import { PayPalRestApi } from "../../../src";
+import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    let response = await paypal.execute("createInvoice", {
+    let response = await paypal.invoice.api.create({
         body: {
             // https://developer.paypal.com/docs/api/invoicing/#invoices_create
             merchant_info: {
@@ -14,20 +14,10 @@ async function example() {
     const invoiceid = response.body.id;
     // tslint:disable-next-line:no-console
     console.log("CreateInvoiceResponse", response.body);
-    response = await paypal.execute("sendInvoice", {
-        helperparams: {
-            invoiceid,
-            notify_merchant: false,
-        },
-    });
+    response = await paypal.invoice.api.send(invoiceid);
     // tslint:disable-next-line:no-console
     console.log("Sent successfully");
-
-    response = await paypal.execute("getInvoicea", {
-        helperparams: {
-            invoiceid,
-        },
-    });
+    response = await paypal.invoice.api.get(invoiceid);
     return response.body;
 }
 

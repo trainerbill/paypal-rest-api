@@ -3,11 +3,9 @@ import { config } from "../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const response = await paypal.execute("searchInvoice", {
-        body: {
-            page: 3,
-            page_size: 2,
-            status: ["DRAFT"],
+    const response = await paypal.execute("listWebhook", {
+        qs: {
+            total_count_required: true,
         },
     });
     return response.body;

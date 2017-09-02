@@ -1,7 +1,7 @@
 import * as joi from "joi";
 import { RequestRetryOptions } from "requestretry";
 import { IConfigureOptions, IHelperRequestOptions } from "./api";
-import * as schemas from "./joi";
+// import * as schemas from "./joi";
 
 export interface IHelper {
   options: RequestRetryOptions;
@@ -12,7 +12,7 @@ export interface IHelper {
 export type helperMap = Map<string, (config: any) => IHelper>;
 
 export const helpers: helperMap = new Map();
-
+/*
 helpers.set("getAccessToken", (config) => {
     const schema = joi.object().keys({
         client_id: joi.string().required(),
@@ -129,3 +129,42 @@ helpers.set("verifyWebhook", (config) => {
         path: "v1/notifications/verify-webhook-signature",
     };
 });
+
+helpers.set("createWebhook", (config) => {
+    return {
+        options: {
+            method: "POST",
+        },
+        path: "v1/notifications/webhooks",
+        schema: schemas.createWebhookRequestSchema,
+    };
+});
+
+helpers.set("getWebhook", (config) => {
+    return {
+        options: {
+            method: "GET",
+        },
+        path: `v1/notifications/webhooks/${config.webhookid}`,
+    };
+});
+
+helpers.set("updateWebhook", (config) => {
+    return {
+        options: {
+            method: "PATCH",
+        },
+        path: `v1/notifications/webhooks/${config.webhookid}`,
+        schema: schemas.updateWebhookRequestSchema,
+    };
+});
+
+helpers.set("deleteWebhook", (config) => {
+    return {
+        options: {
+            method: "DELETE",
+        },
+        path: `v1/notifications/webhooks/${config.webhookid}`,
+    };
+});
+*/

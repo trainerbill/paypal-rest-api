@@ -1,11 +1,13 @@
-import { PayPalRestApi } from "../../src";
-import { config } from "../config";
+import { PayPalRestApi } from "../../../src";
+import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const response = await paypal.execute("listInvoice", {
-        qs: {
-            total_count_required: true,
+    const response = await paypal.invoice.api.search({
+        body: {
+            page: 3,
+            page_size: 2,
+            status: ["DRAFT"],
         },
     });
     return response.body;

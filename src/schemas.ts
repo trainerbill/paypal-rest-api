@@ -1,6 +1,38 @@
 import * as joi from "joi";
 import * as us from "us";
 
+export const ClientIdSchema = joi.string().empty("");
+export const SecretSchema = joi.string().empty("");
+
+export const defaultRequestOptionsSchema = joi.object({
+    baseUrl: joi.string()
+                    .valid(["https://api.paypal.com/", "https://api.sandbox.paypal.com/"])
+                    .default("https://api.paypal.com/"),
+    headers: joi.object({
+        "Accept": joi.string().default("application/json"),
+        "Accept-Language": joi.string().default("en_US"),
+        "Content-Type": joi.string().default("application/json"),
+    }),
+    json: joi.boolean().default(true),
+    maxAttempts: joi.number().min(1).default(5),
+    promiseFactory: joi.func().default((resolver: any) => {
+        return new Promise(resolver);
+    }),
+    retryDelay: joi.number().min(0).default(200),
+});
+
+export const requestOptionsSchema = joi.object({
+    method: joi.string().required(),
+    uri: joi.string().required(),
+});
+
+export const ConfigurationSchema = joi.object({
+    client_id: ClientIdSchema.required(),
+    client_secret: SecretSchema.required(),
+    mode: joi.valid(["production", "sandbox"]).required(),
+    requestOptions: defaultRequestOptionsSchema.default(),
+});
+
 const abbrs = us.STATES.map((state: any) => {
     return state.abbr;
 });
@@ -45,3 +77,11 @@ export const paypalCustomAmountSchema = joi.object().keys({
     amount: paypalCurrencySchema.required(),
     label: joi.string().trim().empty("").max(50).required(),
 });
+
+export const updateRequestObjectSchema = joi.object({
+    op: joi.string().valid(["add", "replace"]).required(),
+    path: joi.string().required(),
+    value: joi.any().required(),
+});
+
+export const updateRequestSchema = joi.array().items(updateRequestObjectSchema).min(1).required();

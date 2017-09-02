@@ -237,25 +237,10 @@ export interface IListResponse extends IResponse {
     next_id: string;
 }
 
-export interface ISearchRequest {
-    email?: string;
-    recipient_first_name?: string;
-    recipient_last_name?: string;
-    recipient_business_name?: string;
-    number?: string;
-    status?: string;
-    lower_total_amount?: ICurrency;
-    upper_total_amount?: ICurrency;
-    start_invoice_date?: string;
-    end_invoice_date?: string;
-    start_due_date?: string;
-    end_due_date?: string;
-    start_payment_date?: string;
-    end_payment_date?: string;
-    start_creation_date?: string;
-    end_creation_date?: string;
-    page?: number;
-    page_size?: number;
-    total_count_required?: boolean;
-    archived?: boolean;
+export interface IUpdateRequestParam {
+    op: string;
+    path: string;
+    value: any;
 }
+
+export type UpdateRequest = IUpdateRequestParam[];
