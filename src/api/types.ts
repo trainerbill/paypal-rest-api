@@ -1,3 +1,13 @@
+import { RequestRetryOptions } from "requestretry";
+import { RequestOptions } from "../client";
+
+export interface IConfigureOptions {
+    client_id: string;
+    client_secret: string;
+    mode: string;
+    requestOptions?: Partial<RequestOptions>;
+}
+
 export interface IAddress {
     line1: string;
     line2?: string;

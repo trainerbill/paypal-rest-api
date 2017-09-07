@@ -1,26 +1,11 @@
-import * as http from "http";
 import * as joi from "joi";
-import * as request from "request";
-import * as retry from "requestretry";
-// tslint:disable-next-line:no-submodule-imports
-import * as uuid from "uuid/v1";
-import { Client, RequestOptions } from "../client";
+import { Client } from "../client";
 import Invoice from "../invoice";
 import { Oauth } from "../oauth";
 import Webhook from "../webhook";
 import WebhookEvent from "../webhookEvent";
-import * as schemas from "./schemas";
-
-export interface IHelperRequestOptions extends retry.RequestRetryOptions {
-    helperparams?: any;
-}
-
-export interface IConfigureOptions {
-    client_id: string;
-    client_secret: string;
-    mode: string;
-    requestOptions?: Partial<RequestOptions>;
-}
+import { ConfigurationSchema } from "./schemas";
+import { IConfigureOptions } from "./types";
 
 export class PayPalRestApi {
     public invoice = Invoice;
@@ -31,7 +16,7 @@ export class PayPalRestApi {
 
     constructor(config: IConfigureOptions) {
 
-        const validateConfig = joi.validate(config, schemas.ConfigurationSchema);
+        const validateConfig = joi.validate(config, ConfigurationSchema);
         if (validateConfig.error) {
             throw validateConfig.error;
         }

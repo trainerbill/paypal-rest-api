@@ -10,21 +10,26 @@
 This package is **NOT** supported by PayPal.  The current [PayPal Node SDK](https://github.com/paypal/PayPal-node-SDK) does not support the newest Javascript features.  This package is intended to support the most cutting edge Javascript features.
 
 ## Main Differences and Features
-
-- Object modeling similar to Mongoose.  This provides high level validation and functionality.
-- Api functions
-  - Schema validation using Joi.  This improves efficiency by preventing invalid api calls from being submitted.
-- Request function to submit to any paypal URL.  Future proofs in case api functions are not available or schemas are false negative.
 - Non-Singleton which allows for the use of multiple paypal rest applications.
     - Necessary for multi-currency support.
-- Written in Typescript and exports types for use in other packages
 - Built on [requestretry](https://github.com/FGRibreau/node-request-retry) and [request](https://github.com/request/request)
-    - All Model and Api functions accept options from both requestretry and request.
     - Native Promise support
     - Retry failed api calls automatically using [paypal idempotency](https://developer.paypal.com/docs/integration/direct/express-checkout/integration-jsv4/best-practices/#process)
+- Object modeling similar to Mongoose.
+    - Additional validations.
+    - Easy usage.  No need to worry about passing around ids.
+    - Accepts all [requestretry](https://github.com/FGRibreau/node-request-retry) options.
+- Api functions
+    - Schema validation using Joi.  This improves efficiency by preventing invalid api calls from being submitted.
+    - Accepts all [requestretry](https://github.com/FGRibreau/node-request-retry) options.
+    - Returns a [request](https://github.com/request/request) response object
+- Standalone client request function to submit to any paypal URL
+    - Future proofs in case api functions are not available
+    - Provides workarounds for schema false negatives
+- Written in Typescript and exports types for use in other packages
 - Store access token expiration date and check before sending request.  Currently the paypal sdk only updates the access token if the request fails.  This is more efficient.
 - High Unit test coverage.
-- [Mocks](https://github.com/trainerbill/paypal-rest-api/tree/master/src/mocks) for testing.
+- Mocks for testing.
 
 ## Installation
 ```
@@ -32,7 +37,7 @@ npm install --save paypal-rest-api
 ```
 
 ## Typescript vs CommonJS
-All examples in this README are using Typescript, however this module can be included in CommonJS(require) as well.  See the [common.js example](https://github.com/trainerbill/paypal-rest-api/blob/master/examples/common.js) for how to use CommonJS with this module.
+All examples in this README are using Typescript, however this module can be included in CommonJS(require) as well.  See the [common.js example](https://github.com/trainerbill/paypal-rest-api/blob/master/examples/commonjs) for how to use CommonJS with this module.
 
 ## Configuration
 The most up to date configuration options can be found on the [IConfigureOptions interface](https://github.com/trainerbill/paypal-rest-api/blob/master/src/api/types.ts)
