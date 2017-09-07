@@ -64,6 +64,8 @@ It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.  
 ### Command line
 use the npm run example script and pass in any file path from the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
 ```
+git clone https://github.com/trainerbill/paypal-rest-api.git
+cd paypal-rest-api
 npm install
 npm run example -- examples/invoice/model/create-update-send-get.ts
 ```
