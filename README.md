@@ -62,6 +62,7 @@ const paypal = new PayPalRestApi({
 It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.  You must npm install first.
 
 ### Command line
+use the npm run example script and pass in any file path from the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
 ```
 npm install
 npm run example -- examples/invoice/model/create-update-send-get.ts
