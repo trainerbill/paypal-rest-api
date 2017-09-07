@@ -1,13 +1,9 @@
-import { PayPalRestApi } from "../../src";
-import { config } from "../config";
+import { PayPalRestApi } from "../../../src";
+import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const response = await paypal.execute("listWebhook", {
-        qs: {
-            total_count_required: true,
-        },
-    });
+    const response = await paypal.webhook.api.list();
     return response.body;
 }
 

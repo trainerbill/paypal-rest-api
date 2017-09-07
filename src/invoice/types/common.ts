@@ -1,5 +1,6 @@
-import { IAddress, ICurrency, ILink, IPhone, IResponse} from "../types";
-export { UpdateRequest } from "../types";
+import { Schema } from "joi";
+import { IApiSchemas } from "../../abstracts/api";
+import { IAddress, ICurrency, ILink, IPhone, IResponse} from "../../types";
 
 export interface IInvoice {
     allow_tip?: boolean;
@@ -135,54 +136,4 @@ export interface IDetail {
 export interface IPaymentDetail extends IDetail {
     transaction_type: string;
     method: string;
-}
-export interface INumberResponse {
-    number: string;
-}
-export interface IQrResponse {
-    image: string;
-}
-
-export interface IInvoiceSearchRequest {
-    email?: string;
-    recipient_first_name?: string;
-    recipient_last_name?: string;
-    recipient_business_name?: string;
-    number?: string;
-    status?: string[];
-    lower_total_amount?: string;
-    upper_total_amount?: string;
-    start_invoice_date?: string;
-    end_invoice_date?: string;
-    start_due_date?: string;
-    end_due_date?: string;
-    start_payment_date?: string;
-    end_payment_date?: string;
-    start_creation_date?: string;
-    end_creation_date?: string;
-    page?: number;
-    page_size?: number;
-    total_count_required?: boolean;
-    archived?: boolean;
-}
-
-export interface IInvoiceListOptions {
-    page?: number;
-    page_size?: number;
-    total_count_required?: boolean;
-}
-
-export interface IInvoiceRecordPaymentRequest extends IInvoiceRecordRefundRequest {
-    method: string;
-}
-
-export interface IInvoiceRecordRefundRequest {
-    date?: string;
-    note?: string;
-    amount?: ICurrency;
-}
-
-export interface IQrQueryParams {
-    height?: number;
-    width?: number;
 }

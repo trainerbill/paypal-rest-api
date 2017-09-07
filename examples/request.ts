@@ -3,7 +3,7 @@ import { config } from "./config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const response = await paypal.request("v1/invoicing/invoices/", {
+    return await paypal.client.request({
         // Any options from the following
         // https://github.com/FGRibreau/node-request-retry
         // https://github.com/request/request
@@ -14,8 +14,8 @@ async function example() {
             },
         },
         method: "POST",
+        uri: "v1/invoicing/invoices/",
     });
-    return response;
 }
 
 // tslint:disable-next-line:no-console

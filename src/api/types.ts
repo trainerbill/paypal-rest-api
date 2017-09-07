@@ -236,11 +236,3 @@ export interface IListResponse extends IResponse {
     count: number;
     next_id: string;
 }
-
-export interface IUpdateRequestParam {
-    op: string;
-    path: string;
-    value: any;
-}
-
-export type UpdateRequest = IUpdateRequestParam[];

@@ -1,67 +1,44 @@
 import * as joi from "joi";
+import { Api } from "../abstracts";
 import { Client, RequestOptions } from "../client";
-import * as schemas from "./schemas";
-import * as types from "./types";
+import schemas from "./schemas";
+import { IWebhook } from "./types";
 
-export class WebhookApi {
+export class WebhookApi extends Api<IWebhook> {
 
-    constructor(private client: Client) {}
+    constructor(client: Client) {
+        super(client, schemas, {
+            create: `/v1/notifications/webhooks`,
+            delete: `/v1/notifications/webhooks/{id}`,
+            get: `/v1/notifications/webhooks/{id}`,
+            list: `/v1/notifications/webhooks`,
+            update: `/v1/notifications/webhooks/{id}`,
+        });
+    }
 
-    public get(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.webhookIdSchema);
-        if (idValidate.error) {
-            throw idValidate.error;
+    public events(id: string, options: Partial<RequestOptions> = {}) {
+        if (this.schemas.id) {
+            const idValidate = joi.validate(id, this.schemas.id);
+            if (idValidate.error) {
+                throw idValidate.error;
+            }
+            id = idValidate.value;
         }
-        options.uri = `/v1/notifications/webhooks/${idValidate.value}`;
-        const validate = joi.validate(options, schemas.webhookGetRequestSchema);
+
+        options.uri = `/v1/notifications/webhooks/${id}/event-types`;
+        const validate = joi.validate(options, schemas.events);
         if (validate.error) {
             throw validate.error;
         }
         return this.client.request(validate.value);
     }
 
-    public create(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate(options, schemas.webhookCreateRequestSchema);
+    public types(options: Partial<RequestOptions> = {}) {
+        options.uri = `/v1/notifications/webhooks-event-types`;
+        const validate = joi.validate(options, schemas.types);
         if (validate.error) {
             throw validate.error;
         }
-        return this.client.request(validate.value);
-    }
-
-    public list(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate(options, schemas.webhookListRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
-    }
-
-    public update(id: string, payload: types.UpdateRequest, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.webhookIdSchema);
-        if (idValidate.error) {
-            throw idValidate.error;
-        }
-        options.uri = `/v1/notifications/webhooks/${idValidate.value}`;
-        options.body = payload;
-        const validate = joi.validate(options, schemas.webhookUpdateRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-
-        return this.client.request(validate.value);
-    }
-
-    public delete(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.webhookIdSchema);
-        if (idValidate.error) {
-            throw idValidate.error;
-        }
-        options.uri = `/v1/notifications/webhooks/${idValidate.value}`;
-        const validate = joi.validate(options, schemas.webhookDeleteRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-
         return this.client.request(validate.value);
     }
 }

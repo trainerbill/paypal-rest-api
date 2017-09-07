@@ -1,58 +1,46 @@
 import * as joi from "joi";
+import { Model } from "../abstracts";
 import { Client, RequestOptions } from "../client";
 import { WebhookApi } from "./api";
 import * as schemas from "./schemas";
-import * as types from "./types";
+import { IWebhook, IWebhookEventTypeListResponse, IWebhookListResponse } from "./types";
 
-// tslint:disable-next-line:interface-name
-export interface WebhookModel {
-    api: WebhookApi;
-}
+export class WebhookModel extends Model<IWebhook> {
 
-export class WebhookModel {
+    public static api: WebhookApi;
 
-    constructor(public model: types.IWebhook | any) {}
-
-    public validate() {
-        const validate = joi.validate(this.model, schemas.webhookSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return validate.value;
+    public static async list(options: Partial<RequestOptions> = {}) {
+        const response = await WebhookModel.api.list(options);
+        return (response.body as IWebhookListResponse).webhooks.map((webhook) => {
+            return new this(webhook);
+        });
     }
 
-    public async create(options: Partial<RequestOptions> = {}) {
-        if (this.model.id) {
-            // Webhook is already created
-            return true;
-        }
-        options.body = this.model;
-        const response = await this.api.create(options);
-        this.model = response.body;
+    public static async get(id: string, options: Partial<RequestOptions> = {}) {
+        const response = await WebhookModel.api.get(id, options);
+        return new this(response.body);
     }
 
-    public async update(payload: types.UpdateRequest, options: Partial<RequestOptions> = {}) {
+    public static async types(options: Partial<RequestOptions> = {}) {
+        const response = await WebhookModel.api.types(options);
+        return (response.body as IWebhookEventTypeListResponse);
+    }
+
+    public static init(client: Client) {
+        const api = new WebhookApi(client);
+        WebhookModel.prototype.api = api;
+        WebhookModel.api = api;
+    }
+
+    constructor(public model: IWebhook) {
+        super(model);
+    }
+
+    public async events(options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
             throw new Error("Model does not have an id.  Call create first");
         }
-        options.body = this.model;
-        const response = await this.api.update(this.model.id, payload, options);
-        this.model = response.body;
-    }
-
-    public async delete(options: Partial<RequestOptions> = {}) {
-        if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
-        }
-        const response = await this.api.delete(this.model.id, options);
-        this.model = {};
-    }
-
-    public async get(options: Partial<RequestOptions> = {}) {
-        if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
-        }
-        const response = await this.api.get(this.model.id, options);
-        this.model = response.body;
+        const response = await WebhookModel.api.events(this.model.id, options);
+        this.model.event_types = response.body.event_types;
     }
 }

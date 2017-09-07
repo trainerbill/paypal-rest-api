@@ -1,14 +1,10 @@
 import * as joi from "joi";
 import * as request from "request";
 import * as retry from "requestretry";
-// tslint:disable-next-line:no-submodule-imports
-import * as uuid from "uuid/v1";
-import { IConfigureOptions } from "./";
-import { Oauth } from "./oauth";
-import * as schemas from "./schemas";
-
-export type RequestOptions = retry.RequestRetryOptions & request.UriOptions;
-export type RequestMethod = (options?: Partial<RequestOptions>) => Promise<request.RequestResponse>;
+import { IConfigureOptions } from "../";
+import { Oauth } from "../oauth";
+import { requestOptionsSchema } from "./schemas";
+import { RequestOptions } from "./types";
 
 export class Client {
 
@@ -32,9 +28,7 @@ export class Client {
             ...options,
         };
 
-        options.headers["PAYPAL-REQUEST-ID"] = uuid();
-
-        const validateRequest = joi.validate(options, schemas.requestOptionsSchema, { allowUnknown: true });
+        const validateRequest = joi.validate(options, requestOptionsSchema, { allowUnknown: true });
         if (validateRequest.error) {
             throw validateRequest.error;
         }
@@ -57,8 +51,9 @@ export class Client {
         }
 
         if (response.statusCode > 299) {
-            // tslint:disable-next-line:max-line-length
-            // console.log(`curl -X POST -v -H "Content-Type:application/json" -H "Authorization: ${response.request.headers.Authorization}" -d '{ "subject": "invoice cancelled" }' ${response.request.href}`);
+            // tslint:disable
+            console.log(`curl -X POST -v -H "Content-Type:application/json" -H "Authorization: ${response.request.headers.Authorization}" -d '${typeof response.request.body === "string" ? response.request.body : JSON.stringify(response.request.body)}' ${response.request.href}`);
+            // tslint:enable
             throw new Error(JSON.stringify(response.body));
         }
         return response;

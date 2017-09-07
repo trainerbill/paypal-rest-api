@@ -1,5 +1,6 @@
 import * as joi from "joi";
-import * as common from "../schemas";
+import * as common from "../api/schemas";
+import { IInvoiceRequestSchemas } from "./types";
 
 // tslint:disable:object-literal-sort-keys
 export const invoiceSearchRequestSchema = joi.object({
@@ -225,5 +226,24 @@ export const invoiceGenerateNumberRequestSchema = joi.object({
     method: joi.string().default("POST"),
     uri: joi.string().default("/v1/invoicing/invoices/next-invoice-number"),
 });
+
+export const invoiceRequestSchemas: IInvoiceRequestSchemas  = {
+    id: invoiceIdSchema,
+    get: invoiceGetRequestSchema,
+    create: invoiceCreateRequestSchema,
+    cancel: invoiceCancelRequestSchema,
+    delete: invoiceDeleteRequestSchema,
+    update: invoiceUpdateRequestSchema,
+    send: invoiceSendRequestSchema,
+    search: invoiceSearchRequestSchema,
+    remind: invoiceRemindRequestSchema,
+    recordPayment: invoiceRecordPaymentRequestSchema,
+    recordRefund: invoiceRecordRefundRequestSchema,
+    qr: invoiceQrRequestSchema,
+    generate: invoiceGenerateNumberRequestSchema,
+    list: invoiceListRequestSchema,
+};
+
+export default invoiceRequestSchemas;
 
 // tslint:enable:object-literal-sort-keys

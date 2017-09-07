@@ -3,13 +3,9 @@ import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const invoice = new paypal.invoice({
-        merchant_info: {
-            business_name: "testy",
-        },
-    });
-    await invoice.create();
-    await invoice.delete();
+    // Returns model
+    const invoice = await paypal.invoice.get("INV2-ZVTT-ZGLF-CTSZ-PQQW");
+    return JSON.stringify(invoice.model);
 }
 
 // tslint:disable-next-line:no-console

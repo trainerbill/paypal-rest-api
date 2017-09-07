@@ -1,5 +1,5 @@
 import * as joi from "joi";
-import { ClientIdSchema, SecretSchema} from "../schemas";
+import { ClientIdSchema, SecretSchema} from "../api/schemas";
 
 export const OauthAccessTokenRequestSchema = joi.object({
     auth: joi.object({

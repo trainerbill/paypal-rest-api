@@ -11,14 +11,19 @@ This package is **NOT** supported by PayPal.  The current [PayPal Node SDK](http
 
 ## Main Differences and Features
 
-- Non-Singleton which allows for the use of multiple paypal rest applications.  Necessary for multi-currency support.
-- Written in Typescript and provides [api types externally](https://github.com/trainerbill/paypal-rest-api/tree/master/src/apitypes)
-- Native Promise support using the [request retry library](https://github.com/FGRibreau/node-request-retry)
-- Retry failed api calls automatically using [request retry library](https://github.com/FGRibreau/node-request-retry) and [paypal idempotency](https://developer.paypal.com/docs/integration/direct/express-checkout/integration-jsv4/best-practices/#process)
-- Store access token expiration date and check before sending request.  Currently the paypal sdk only updates the token if the request fails.  This is more efficient.
-- Api Pre Validation using [Joi Schemas](https://github.com/trainerbill/paypal-rest-api/tree/master/src/joi).  This improves efficiency by preventing invalid api calls from being submitted.
+- Object modeling similar to Mongoose.  This provides high level validation and functionality.
+- Api functions
+  - Schema validation using Joi.  This improves efficiency by preventing invalid api calls from being submitted.
+- Request function to submit to any paypal URL.  Future proofs in case api functions are not available or schemas are false negative.
+- Non-Singleton which allows for the use of multiple paypal rest applications.
+    - Necessary for multi-currency support.
+- Written in Typescript and exports types for use in other packages
+- Built on [requestretry](https://github.com/FGRibreau/node-request-retry) and [request](https://github.com/request/request)
+    - All Model and Api functions accept options from both requestretry and request.
+    - Native Promise support
+    - Retry failed api calls automatically using [paypal idempotency](https://developer.paypal.com/docs/integration/direct/express-checkout/integration-jsv4/best-practices/#process)
+- Store access token expiration date and check before sending request.  Currently the paypal sdk only updates the access token if the request fails.  This is more efficient.
 - High Unit test coverage.
-- Provide request function to submit any URL.  Future proofs in case helper method is not available.
 - [Mocks](https://github.com/trainerbill/paypal-rest-api/tree/master/src/mocks) for testing.
 
 ## Installation
@@ -30,7 +35,7 @@ npm install --save paypal-rest-api
 All examples in this README are using Typescript, however this module can be included in CommonJS(require) as well.  See the [common.js example](https://github.com/trainerbill/paypal-rest-api/blob/master/examples/common.js) for how to use CommonJS with this module.
 
 ## Configuration
-The most up to date configuration options can be found on the [IConfigureOptions interface](https://github.com/trainerbill/paypal-rest-api/blob/master/src/api.ts)
+The most up to date configuration options can be found on the [IConfigureOptions interface](https://github.com/trainerbill/paypal-rest-api/blob/master/src/api/types.ts)
 ```
 import { PayPalRestApi } from "../src";
 
@@ -45,7 +50,6 @@ const paypal = new PayPalRestApi({
         // https://github.com/FGRibreau/node-request-retry
         // https://github.com/request/request
     },
-    validate: true, // Turns on prevalidation.  set to false if your validations are false negative.  Only available in execute method.
 });
 ```
 
@@ -55,19 +59,20 @@ It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.
 ### Command line
 ```
 // "examples/ANY_FILE_IN_EXAMPLES_FOLDER"
-npm run example -- examples/request
+npm run example -- examples/invoice/model/create-update-send-get.ts
 ```
 
 ### VSCode
 Switch to the Debugger.  Open the example file you want to run, select the "Launch Example File" configuration and select run.
 
 ## Usage
-There are 2 different methods to make API Calls. For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).  View the [common.js file](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/common.js) for a CommonJS example using require.
+There are 3 different methods to make API Calls. It is **STRONGLY** recommended to use the Model approach.  For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).  View the [common.js file](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/commonjs) for a CommonJS example using require.
 
-### Execute Method
-The execute method can be executed for any api call that has a [helper method](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/src/helpers.ts).
+### Modeling
+The modeling approach provides the most functionality.  By storing the information in a model we can validate additional information before making another api call.  For example, an invoice can only be deleted if it is in a DRAFT state.  Using modeling we can prevent the delete api call unless the status is DRAFT.  We also do not have to keep passing around ids since the information is stored on the model.
+
 ```
-import { PayPalRestApi } from "../src";
+import { PayPalRestApi } from "paypal-rest-api";
 
 const paypal = new PayPalRestApi({
     client_id: "YOUR_CLIENT_ID",
@@ -75,21 +80,45 @@ const paypal = new PayPalRestApi({
     mode: "sandbox",
 });
 
-paypal.execute("createInvoice", {
+const invoice = new paypal.invoice({
+    merchant_info: {
+        business_name: "testy",
+    },
+});
+// Create an invoice, send it, delete will throw an exception before sending the api call.
+invoice.create()
+    .then(() => invoice.send())
+    .then(() => invoice.delete())
+    .catch((err) => console.log(err));
+```
+
+### Api Functions
+All api functions are available on the models.  You can access them on the api property.  Each API function takes the requestretry options as an argument so you set the body property to your api payload.  Each API function returns a request response.  All api functions are validated via a schema.  Occasionally these may fail so please submit an issue.
+```
+import { PayPalRestApi } from "paypal-rest-api";
+
+const paypal = new PayPalRestApi({
+    client_id: "YOUR_CLIENT_ID",
+    client_secret: "YOUR_CLIENT_SECRET",
+    mode: "sandbox",
+});
+
+paypal.invoice.api.create({
     body: {
-        // https://developer.paypal.com/docs/api/invoicing/#invoices_create
         merchant_info: {
             business_name: "testy",
         },
-    },
+    }
 })
-.then((response) => console.log)
-.catch((err) => console.error);
+    .then((response) => {
+        return response.body.id;
+    })
+    .then((id) => paypal.invoice.api.send(id))
+    .catch((err) => console.log(err));
 ```
 
 ### Request Method 
-If a helper method does not exist you can always use the request method to directly execute an API call to an endpoint.  You must specify the path and method.
-
+If an API function does not exist or you are getting a false negative on a schema validation, you can always use the request method to directly execute an API call to an endpoint.  You must specify the path, method, and more than likely the body.
 ```
 import { PayPalRestApi } from "../src";
 
@@ -99,14 +128,15 @@ const paypal = new PayPalRestApi({
     mode: "sandbox",
 });
 
-paypal.request("v1/invoicing/invoices/", {
+paypal.client.request({
     body: {
         merchant_info: {
             business_name: "testy",
         },
     },
     method: "POST",
+    uri: "v1/invoicing/invoices/",
 })
-.then((response) => console.log)
-.catch((err) => console.error);
+.then((response) => console.log(response))
+.catch((err) => console.error(err));
 ```

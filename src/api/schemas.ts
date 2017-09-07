@@ -1,30 +1,9 @@
 import * as joi from "joi";
 import * as us from "us";
+import { defaultRequestOptionsSchema } from "../client/schemas";
 
 export const ClientIdSchema = joi.string().empty("");
 export const SecretSchema = joi.string().empty("");
-
-export const defaultRequestOptionsSchema = joi.object({
-    baseUrl: joi.string()
-                    .valid(["https://api.paypal.com/", "https://api.sandbox.paypal.com/"])
-                    .default("https://api.paypal.com/"),
-    headers: joi.object({
-        "Accept": joi.string().default("application/json"),
-        "Accept-Language": joi.string().default("en_US"),
-        "Content-Type": joi.string().default("application/json"),
-    }),
-    json: joi.boolean().default(true),
-    maxAttempts: joi.number().min(1).default(5),
-    promiseFactory: joi.func().default((resolver: any) => {
-        return new Promise(resolver);
-    }),
-    retryDelay: joi.number().min(0).default(200),
-});
-
-export const requestOptionsSchema = joi.object({
-    method: joi.string().required(),
-    uri: joi.string().required(),
-});
 
 export const ConfigurationSchema = joi.object({
     client_id: ClientIdSchema.required(),
@@ -33,7 +12,7 @@ export const ConfigurationSchema = joi.object({
     requestOptions: defaultRequestOptionsSchema.default(),
 });
 
-const abbrs = us.STATES.map((state: any) => {
+export const stateAbbreviations = us.STATES.map((state: any) => {
     return state.abbr;
 });
 
@@ -44,7 +23,7 @@ export const paypalAddressSchema = joi.object().keys({
     line2: joi.string().trim().empty("").optional(),
     phone: joi.string().trim().empty("").optional(),
     postal_code: joi.string().trim().empty("").required(),
-    state: joi.string().trim().empty("").valid(abbrs).required(),
+    state: joi.string().trim().empty("").valid(stateAbbreviations).required(),
 });
 
 export const paypalPhoneSchema = joi.object().keys({
@@ -80,7 +59,7 @@ export const paypalCustomAmountSchema = joi.object().keys({
 
 export const updateRequestObjectSchema = joi.object({
     op: joi.string().valid(["add", "replace"]).required(),
-    path: joi.string().required(),
+    path: joi.string().regex(/\/.*/).required(),
     value: joi.any().required(),
 });
 

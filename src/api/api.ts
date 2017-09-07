@@ -4,12 +4,12 @@ import * as request from "request";
 import * as retry from "requestretry";
 // tslint:disable-next-line:no-submodule-imports
 import * as uuid from "uuid/v1";
-import { Client, RequestOptions } from "./client";
-import * as helpers from "./helpers";
-import { Invoice } from "./invoice";
-import { Oauth } from "./oauth";
+import { Client, RequestOptions } from "../client";
+import Invoice from "../invoice";
+import { Oauth } from "../oauth";
+import Webhook from "../webhook";
+import WebhookEvent from "../webhookEvent";
 import * as schemas from "./schemas";
-import { Webhook } from "./webhook";
 
 export interface IHelperRequestOptions extends retry.RequestRetryOptions {
     helperparams?: any;
@@ -23,11 +23,11 @@ export interface IConfigureOptions {
 }
 
 export class PayPalRestApi {
-    public invoice: Invoice;
-    public webhook: Webhook;
+    public invoice = Invoice;
+    public webhook = Webhook;
+    public webhookEvent = WebhookEvent;
     public client: Client;
     private config: IConfigureOptions;
-
 
     constructor(config: IConfigureOptions) {
 
@@ -42,7 +42,8 @@ export class PayPalRestApi {
         }
 
         this.client = new Client(this.config);
-        this.invoice = new Invoice(this.client);
-        this.webhook = new Webhook(this.client);
+        Invoice.init(this.client);
+        Webhook.init(this.client);
+        WebhookEvent.init(this.client);
     }
 }

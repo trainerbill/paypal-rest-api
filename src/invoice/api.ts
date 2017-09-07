@@ -1,58 +1,31 @@
 import * as joi from "joi";
 import * as request from "request";
 import * as retry from "requestretry";
+import { Api } from "../abstracts/api";
 import { Client, RequestMethod, RequestOptions } from "../client";
-import * as schemas from "./schemas";
-import * as types from "./types";
+import { invoiceRequestSchemas } from "./schemas";
+import { IInvoice } from "./types";
 
-export class InvoiceApi {
+export class InvoiceApi extends Api<IInvoice> {
 
-    constructor(private client: Client) {}
-
-    public get(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
-        if (idValidate.error) {
-            throw idValidate.error;
-        }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}`;
-        const validate = joi.validate(options, schemas.invoiceGetRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
-    }
-
-    public list(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate(options, schemas.invoiceListRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
-    }
-
-    public search(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate(options, schemas.invoiceSearchRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
-    }
-
-    public create(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate(options, schemas.invoiceCreateRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+    constructor(client: Client) {
+        super(client, invoiceRequestSchemas, {
+            create: `/v1/invoicing/invoices`,
+            delete: `/v1/invoicing/invoices/{id}`,
+            get: `/v1/invoicing/invoices/{id}`,
+            list: `/v1/invoicing/invoices`,
+            search: `/v1/invoicing/search`,
+            update: `/v1/invoicing/invoices/{id}`,
+        });
     }
 
     public send(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
+        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
         if (idValidate.error) {
             throw idValidate.error;
         }
         options.uri = `/v1/invoicing/invoices/${idValidate.value}/send`;
-        const validate = joi.validate(options, schemas.invoiceSendRequestSchema);
+        const validate = joi.validate(options, invoiceRequestSchemas.send);
         if (validate.error) {
             throw validate.error;
         }
@@ -60,12 +33,12 @@ export class InvoiceApi {
     }
 
     public remind(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
+        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
         if (idValidate.error) {
             throw idValidate.error;
         }
         options.uri = `/v1/invoicing/invoices/${idValidate.value}/remind`;
-        const validate = joi.validate(options, schemas.invoiceRemindRequestSchema);
+        const validate = joi.validate(options, invoiceRequestSchemas.remind);
         if (validate.error) {
             throw validate.error;
         }
@@ -73,53 +46,26 @@ export class InvoiceApi {
     }
 
     public cancel(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
+        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
         if (idValidate.error) {
             throw idValidate.error;
         }
         options.uri = `/v1/invoicing/invoices/${idValidate.value}/cancel`;
-        const validate = joi.validate(options, schemas.invoiceCancelRequestSchema);
+        const validate = joi.validate(options, invoiceRequestSchemas.cancel);
         if (validate.error) {
             throw validate.error;
         }
-        return this.client.request(validate.value);
-    }
 
-    public delete(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
-        if (idValidate.error) {
-            throw idValidate.error;
-        }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}`;
-        const validate = joi.validate(options, schemas.invoiceDeleteRequestSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
-    }
-
-    public update(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
-        if (idValidate.error) {
-            throw idValidate.error;
-        }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}`;
-        const validate = joi.validate(options, schemas.invoiceUpdateRequestSchema, {
-            stripUnknown: true,
-        });
-        if (validate.error) {
-            throw validate.error;
-        }
         return this.client.request(validate.value);
     }
 
     public recordPayment(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
+        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
         if (idValidate.error) {
             throw idValidate.error;
         }
         options.uri = `/v1/invoicing/invoices/${idValidate.value}/record-payment`;
-        const validate = joi.validate(options, schemas.invoiceRecordPaymentRequestSchema);
+        const validate = joi.validate(options, invoiceRequestSchemas.recordPayment);
         if (validate.error) {
             throw validate.error;
         }
@@ -127,12 +73,12 @@ export class InvoiceApi {
     }
 
     public recordRefund(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
+        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
         if (idValidate.error) {
             throw idValidate.error;
         }
         options.uri = `/v1/invoicing/invoices/${idValidate.value}/record-refund`;
-        const validate = joi.validate(options, schemas.invoiceRecordRefundRequestSchema);
+        const validate = joi.validate(options, invoiceRequestSchemas.recordRefund);
         if (validate.error) {
             throw validate.error;
         }
@@ -140,12 +86,12 @@ export class InvoiceApi {
     }
 
     public qr(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, schemas.invoiceIdSchema);
+        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
         if (idValidate.error) {
             throw idValidate.error;
         }
         options.uri = `/v1/invoicing/invoices/${idValidate.value}/qr-code`;
-        const validate = joi.validate(options, schemas.invoiceQrRequestSchema);
+        const validate = joi.validate(options, invoiceRequestSchemas.qr);
         if (validate.error) {
             throw validate.error;
         }
@@ -153,7 +99,7 @@ export class InvoiceApi {
     }
 
     public generateNumber(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate(options, schemas.invoiceGenerateNumberRequestSchema);
+        const validate = joi.validate(options, invoiceRequestSchemas.generate);
         if (validate.error) {
             throw validate.error;
         }

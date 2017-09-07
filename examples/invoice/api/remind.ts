@@ -3,7 +3,6 @@ import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const invoiceid = "INV2-LUN7-9R7P-WMZW-XQV5";
     // tslint:disable-next-line:no-console
     let response = await paypal.invoice.api.search({
         body: {

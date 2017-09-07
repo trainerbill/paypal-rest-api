@@ -3,7 +3,7 @@ import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const invoice = new paypal.invoice.model({
+    const invoice = new paypal.invoice({
         merchant_info: {
             business_name: "testy",
         },

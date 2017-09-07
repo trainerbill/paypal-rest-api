@@ -5,7 +5,7 @@ import { config } from "../../config";
 // tslint:disable:no-console
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const webhook = new paypal.webhook.model({
+    const webhook = new paypal.webhook({
         event_types: [{
             name: "INVOICING.INVOICE.PAID",
         }, {

@@ -1,5 +1,5 @@
 // you would use: var PayPalRestApi = require("paypal-rest-api").PayPalRestApi;
-var PayPalRestApi = require("../lib").PayPalRestApi;
+var PayPalRestApi = require("../../lib").PayPalRestApi;
 
 const paypal = new PayPalRestApi({
     client_id: "ARkR7soWd2kUxFCNPHOmyb3IQhOwiL-wYhRmsRRD1SdslE0u-lCEps4LdN_KocpyEPgaWJXcsFuwd99M",
@@ -7,13 +7,19 @@ const paypal = new PayPalRestApi({
     mode: "sandbox",
 });
 
-paypal.execute("createInvoice", {
+paypal.client.request({
     body: {
         // https://developer.paypal.com/docs/api/invoicing/#invoices_create
         merchant_info: {
             business_name: "testy",
         },
     },
+    method: "POST",
+    uri: "v1/invoicing/invoices/",
 })
-.then((response) => console.log(response.body))
+.then((response) => {
+    console.log("Invoice", response.body);
+    return response.body.id;
+})
+.then((id) => paypal.invoice.api.delete)
 .catch((err) => console.error);
