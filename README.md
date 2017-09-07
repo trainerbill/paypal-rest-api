@@ -71,7 +71,7 @@ npm run example -- examples/invoice/model/create-update-send-get.ts
 ```
 
 ### VSCode
-Switch to the Debugger.  Open the example file you want to run, select the "Launch Example File" configuration and select run.
+The repo provides some [launch configurations and tasks](https://github.com/trainerbill/paypal-rest-api/tree/master/.vscode) for VsCode. Switch to the Debugger,  open the example file you want to run, select the "Launch Example File" configuration and select run.
 
 ## Usage
 There are 3 different methods to make API Calls. It is **STRONGLY** recommended to use the Model approach.  For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
