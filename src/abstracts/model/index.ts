@@ -1,4 +1,3 @@
-import * as joi from "joi";
 import { Client, RequestOptions } from "../../client";
 import { Api, UpdateRequest } from "../api";
 import { IModel } from "./types";
@@ -15,14 +14,6 @@ export class Model<T> {
     public api: Api<T>;
 
     constructor(public model: IModel & T) {}
-
-    public validate(schema: joi.Schema) {
-        const validate = joi.validate(this.model, schema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return validate.value;
-    }
 
     public async create(options: Partial<RequestOptions> = {}) {
         if (this.model.id) {

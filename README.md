@@ -59,11 +59,11 @@ const paypal = new PayPalRestApi({
 ```
 
 ## Run an example
-It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.
+It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.  You must npm install first.
 
 ### Command line
 ```
-// "examples/ANY_FILE_IN_EXAMPLES_FOLDER"
+npm install
 npm run example -- examples/invoice/model/create-update-send-get.ts
 ```
 
@@ -71,7 +71,7 @@ npm run example -- examples/invoice/model/create-update-send-get.ts
 Switch to the Debugger.  Open the example file you want to run, select the "Launch Example File" configuration and select run.
 
 ## Usage
-There are 3 different methods to make API Calls. It is **STRONGLY** recommended to use the Model approach.  For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).  View the [common.js file](https://github.com/trainerbill/paypal-rest-api/tree/master/examples/commonjs) for a CommonJS example using require.
+There are 3 different methods to make API Calls. It is **STRONGLY** recommended to use the Model approach.  For full examples refer to the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
 
 ### Modeling
 The modeling approach provides the most functionality.  By storing the information in a model we can validate additional information before making another api call.  For example, an invoice can only be deleted if it is in a DRAFT state.  Using modeling we can prevent the delete api call unless the status is DRAFT.  We also do not have to keep passing around ids since the information is stored on the model.

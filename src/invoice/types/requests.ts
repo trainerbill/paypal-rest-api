@@ -1,6 +1,6 @@
 import { Schema } from "joi";
 import { IApiSchemas } from "../../abstracts/api";
-import { ICurrency } from "../../types";
+import { ICurrency } from "../../api/types";
 
 export interface IInvoiceRequestSchemas extends IApiSchemas {
     cancel: Schema;

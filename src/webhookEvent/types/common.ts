@@ -1,5 +1,5 @@
 import { IModel } from "../../abstracts/model";
-import { ILink } from "../../types";
+import { ILink } from "../../api/types";
 
 export interface IWebhookEvent extends IModel {
     readonly id?: string;

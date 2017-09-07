@@ -1,7 +1,7 @@
 import { Schema } from "joi";
 import { IApiSchemas } from "../../abstracts/api";
 import { IModel } from "../../abstracts/model";
-import { ILink, IResponse } from "../../types";
+import { ILink, IResponse } from "../../api/types";
 
 export interface IWebhook extends IModel {
     event_types: IWebhookEventType[];

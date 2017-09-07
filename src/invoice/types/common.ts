@@ -1,6 +1,6 @@
 import { Schema } from "joi";
 import { IApiSchemas } from "../../abstracts/api";
-import { IAddress, ICurrency, ILink, IPhone, IResponse} from "../../types";
+import { IAddress, ICurrency, ILink, IPhone, IResponse} from "../../api/types";
 
 export interface IInvoice {
     allow_tip?: boolean;
