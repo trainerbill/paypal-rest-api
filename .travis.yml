@@ -3,8 +3,7 @@ node_js:
   - 'node' # use latest stable nodejs version
   - '7'
   - '6'
-  - '5'
-  - '4'
+
 script:
   - npm test  # build and test
 after_script:
