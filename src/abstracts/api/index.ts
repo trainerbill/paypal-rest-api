@@ -36,6 +36,7 @@ export class Api {
         if (!this.paths.create) {
             throw new Error("Create path not available for this api");
         }
+        options.uri = this.paths.create;
         options = this.schemaValidate(options, this.schemas.create);
         return this.client.request(options);
     }
@@ -56,6 +57,7 @@ export class Api {
         if (!this.paths.list) {
             throw new Error("Get path not available for this api");
         }
+        options.uri = this.paths.list;
         options = this.schemaValidate(options, this.schemas.list);
         return this.client.request(options);
     }
@@ -64,6 +66,7 @@ export class Api {
         if (!this.paths.search) {
             throw new Error("Search path not available for this api");
         }
+        options.uri = this.paths.search;
         options = this.schemaValidate(options, this.schemas.search);
         return this.client.request(options);
     }

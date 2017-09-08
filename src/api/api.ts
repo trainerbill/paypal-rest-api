@@ -2,6 +2,7 @@ import * as joi from "joi";
 import { Client } from "../client";
 import Invoice from "../invoice";
 import { Oauth } from "../oauth";
+import Payment from "../payment";
 import Webhook from "../webhook";
 import WebhookEvent from "../webhookEvent";
 import { configurationSchema } from "./schemas";
@@ -18,6 +19,7 @@ export class PayPalRestApi {
         Webhook.init(this.client);
         WebhookEvent.init(this.client);
         Invoice.init(this.client);
+        Payment.init(this.client);
     }
 
     get config() {
@@ -54,6 +56,10 @@ export class PayPalRestApi {
 
     get webhookEvent() {
         return WebhookEvent;
+    }
+
+    get payment() {
+        return Payment;
     }
 
 }

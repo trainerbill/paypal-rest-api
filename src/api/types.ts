@@ -71,53 +71,10 @@ export interface ICurrency {
     value: string;
 }
 
-export interface IQueryParameters {
-    count?: number;
-    start_id?: string;
-    start_index?: number;
-    start_time?: string;
-    end_time?: string;
-    payee_id?: string;
-    sort_by?: string;
-    sort_order?: string;
-    anchor_type?: string;
-    page_size?: number;
-    transaction_id?: string;
-    event_type?: string;
-    webhook_id?: string;
-    page?: number;
-    total_count_required?: boolean;
-    status?: string[];
-}
-
 export interface ILink {
     href: string;
     method: string;
     rel: string;
-}
-
-export interface ITransaction {
-    reference_id?: string;
-    amount: IAmount;
-    description?: string;
-    item_list?: {
-        items: Item[];
-        shipping_address?: IAddress;
-        shipping_method?: string;
-        shipping_phone_number?: string;
-    };
-    payee?: IPayee;
-    note_to_payee?: string;
-    custom?: string;
-    invoice_number?: string;
-    purchase_order?: string;
-    soft_descriptor?: string;
-    payment_options?: {
-        allowed_payment_method: string;
-    };
-    notify_url?: string;
-    order_url?: string;
-    readonly related_resources?: IRelatedResources;
 }
 
 export interface IPayee {
@@ -129,28 +86,6 @@ export interface IPayee {
         brand_name?: string;
     };
 }
-
-export interface IPayment {
-    readonly id?: string;
-    intent: string;
-    payer: {
-        payment_method: string;
-    };
-    transactions: [ ITransaction ];
-    readonly state?: string;
-    experience_profile_id?: string;
-    note_to_payer?: string;
-    redirect_urls?: {
-        return_url?: string;
-        cancel_url?: string;
-    };
-    readonly failure_reason?: string;
-    readonly create_time?: string;
-    readonly update_time?: string;
-    readonly links?: ILink[];
-}
-
-export interface IPaymentResponse extends IPayment, IResponse {}
 
 export interface IResource {
     readonly id: string;
@@ -232,17 +167,4 @@ export interface IRelatedResources {
     order?: any;
     capture?: ICaptureResource;
     refund?: IRefundResource;
-}
-
-export interface IExecuteRequest {
-    payer_id: string;
-}
-export interface ISaleResponse extends ISaleResource, IResponse {}
-export interface IAuthorizationResponse extends IAuthorizationResource, IResponse {}
-export interface ICaptureResponse extends ICaptureResource, IResponse {}
-export interface IRefundResponse extends IRefundResource, IResponse {}
-export interface IListResponse extends IResponse {
-    payments: IPayment[];
-    count: number;
-    next_id: string;
 }
