@@ -20,9 +20,10 @@
   "typings": "lib/index.d.ts",
   "scripts": {
     "clean": "rimraf lib coverage",
-    "lint": "tslint --force --format verbose \"src/**/*.ts\"",
+    "coverage": "nyc blue-tape test/**/*-spec.ts | tap-spec && nyc report ---reporter=text",
+    "lint": "tslint --force --format verbose 'src/**/*.ts' 'examples/**/*.ts'",
     "build": "npm run clean && npm run lint && echo Using TypeScript && tsc --version && tsc --pretty",
-    "test": "nyc blue-tape test/**/*-spec.ts | tap-spec && nyc report ---reporter=text",
+    "test": "npm run lint && npm run coverage",
     "watch": "npm run build -- --watch",
     "watch:test": "npm run test -- --watch",
     "release": "npm test && npm run build && npm version --",
