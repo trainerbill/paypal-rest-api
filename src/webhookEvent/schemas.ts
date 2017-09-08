@@ -51,14 +51,3 @@ export const webhookEventSimulateRequestSchema = joi.object({
     method: joi.string().default("POST"),
     uri: joi.string().default("/v1/notifications/simulate-event"),
 });
-
-const webhookEventSchemas: IWebhookEventApiSchemas = {
-    get: webhookEventGetRequestSchema,
-    id: webhookEventIdSchema,
-    list: webhookEventListRequestSchema,
-    resend: webhookEventResendRequestSchema,
-    simulate: webhookEventSimulateRequestSchema,
-    verify: webhookEventVerifyRequestSchema,
-};
-
-export default webhookEventSchemas;

@@ -1,5 +1,3 @@
-import { Client } from "../client";
-import { WebhookEventApi } from "./api";
 import { WebhookEventModel } from "./model";
 
 export * from "./types";

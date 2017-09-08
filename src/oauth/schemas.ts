@@ -1,10 +1,12 @@
 import * as joi from "joi";
-import { ClientIdSchema, SecretSchema} from "../api/schemas";
+import { clientIdSchema, secretSchema} from "../api/schemas";
 
-export const OauthAccessTokenRequestSchema = joi.object({
+export { clientIdSchema, secretSchema } from "../api/schemas";
+
+export const oauthAccessTokenRequestSchema = joi.object({
     auth: joi.object({
-        password: SecretSchema.required(),
-        user: ClientIdSchema.required(),
+        password: secretSchema.required(),
+        user: clientIdSchema.required(),
     }),
     form: joi.object({
         grant_type: joi.string().default("client_credentials"),

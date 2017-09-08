@@ -10,7 +10,7 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
     public static api: WebhookEventApi;
 
     public static async list(options: Partial<RequestOptions> = {}) {
-        const response = await WebhookEventModel.api.list(options);
+        const response = await this.api.list(options);
         return (response.body as IWebhookEventListResponse).events.map((webhookEvent) => {
             return new this(webhookEvent);
         });
@@ -18,13 +18,13 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
 
     public static async verify(webhookEvent: string, options: Partial<RequestOptions> = {}) {
         options.body = webhookEvent;
-        const response = await WebhookEventModel.api.verify(options);
+        const response = await this.api.verify(options);
         return response.body;
     }
 
     public static async simulate(payload: IWebhookSimulateRequestSchema, options: Partial<RequestOptions> = {}) {
         options.body = payload;
-        const response = await WebhookEventModel.api.simulate(options);
+        const response = await this.api.simulate(options);
         return new this(response.body);
     }
 
@@ -43,7 +43,7 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
             throw new Error("Model does not have an id.  Call create first");
         }
 
-        const response = await WebhookEventModel.api.resend(this.model.id, options);
+        const response = await this.api.resend(this.model.id, options);
         this.model = response.body;
     }
 }

@@ -3,106 +3,120 @@ import * as request from "request";
 import * as retry from "requestretry";
 import { Api } from "../abstracts/api";
 import { Client, RequestMethod, RequestOptions } from "../client";
-import { invoiceRequestSchemas } from "./schemas";
+import {
+    invoiceCancelRequestSchema,
+    invoiceCreateRequestSchema,
+    invoiceDeleteRequestSchema,
+    invoiceGenerateNumberRequestSchema,
+    invoiceGetRequestSchema,
+    invoiceIdSchema,
+    invoiceListRequestSchema,
+    invoiceQrRequestSchema,
+    invoiceRecordPaymentRequestSchema,
+    invoiceRecordRefundRequestSchema,
+    invoiceRemindRequestSchema,
+    invoiceSearchRequestSchema,
+    invoiceSendRequestSchema,
+    invoiceUpdateRequestSchema,
+ } from "./schemas";
 import { IInvoice } from "./types";
 
-export class InvoiceApi extends Api<IInvoice> {
+export class InvoiceApi extends Api {
+
+    public static paths = {
+        cancel: `/v1/invoicing/invoices/{id}/cancel`,
+        create: `/v1/invoicing/invoices`,
+        delete: `/v1/invoicing/invoices/{id}`,
+        generateNumber: `/v1/invoicing/invoices/next-invoice-number`,
+        get: `/v1/invoicing/invoices/{id}`,
+        list: `/v1/invoicing/invoices`,
+        qr: `/v1/invoicing/invoices/{id}/qr-code`,
+        recordPayment: `/v1/invoicing/invoices/{id}/record-payment`,
+        recordRefund: `/v1/invoicing/invoices/{id}/record-refund`,
+        remind: `/v1/invoicing/invoices/{id}/remind`,
+        search: `/v1/invoicing/search`,
+        send: `/v1/invoicing/invoices/{id}/send`,
+        update: `/v1/invoicing/invoices/{id}`,
+    };
+
+    public static schemas = {
+        cancel: invoiceCancelRequestSchema,
+        create: invoiceCreateRequestSchema,
+        delete: invoiceDeleteRequestSchema,
+        generateNumber: invoiceGenerateNumberRequestSchema,
+        get: invoiceGetRequestSchema,
+        id: invoiceIdSchema,
+        list: invoiceListRequestSchema,
+        qr: invoiceQrRequestSchema,
+        recordPayment: invoiceRecordPaymentRequestSchema,
+        recordRefund: invoiceRecordRefundRequestSchema,
+        remind: invoiceRemindRequestSchema,
+        search: invoiceSearchRequestSchema,
+        send: invoiceSendRequestSchema,
+        update: invoiceUpdateRequestSchema,
+    };
 
     constructor(client: Client) {
-        super(client, invoiceRequestSchemas, {
-            create: `/v1/invoicing/invoices`,
-            delete: `/v1/invoicing/invoices/{id}`,
-            get: `/v1/invoicing/invoices/{id}`,
-            list: `/v1/invoicing/invoices`,
-            search: `/v1/invoicing/search`,
-            update: `/v1/invoicing/invoices/{id}`,
-        });
+        super(client, InvoiceApi.schemas, InvoiceApi.paths);
     }
 
     public send(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
-        if (idValidate.error) {
-            throw idValidate.error;
+        if (InvoiceApi.schemas.id) {
+            id = this.schemaValidate(id, InvoiceApi.schemas.id);
         }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}/send`;
-        const validate = joi.validate(options, invoiceRequestSchemas.send);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = this.parsePath(InvoiceApi.paths.send, { id });
+        options = this.schemaValidate(options, InvoiceApi.schemas.send);
+        return this.client.request(options);
     }
 
     public remind(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
-        if (idValidate.error) {
-            throw idValidate.error;
+        if (InvoiceApi.schemas.id) {
+            id = this.schemaValidate(id, InvoiceApi.schemas.id);
         }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}/remind`;
-        const validate = joi.validate(options, invoiceRequestSchemas.remind);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = this.parsePath(InvoiceApi.paths.remind, { id });
+        options = this.schemaValidate(options, InvoiceApi.schemas.remind);
+        return this.client.request(options);
     }
 
     public cancel(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
-        if (idValidate.error) {
-            throw idValidate.error;
+        if (InvoiceApi.schemas.id) {
+            id = this.schemaValidate(id, InvoiceApi.schemas.id);
         }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}/cancel`;
-        const validate = joi.validate(options, invoiceRequestSchemas.cancel);
-        if (validate.error) {
-            throw validate.error;
-        }
-
-        return this.client.request(validate.value);
+        options.uri = this.parsePath(InvoiceApi.paths.cancel, { id });
+        options = this.schemaValidate(options, InvoiceApi.schemas.cancel);
+        return this.client.request(options);
     }
 
     public recordPayment(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
-        if (idValidate.error) {
-            throw idValidate.error;
+        if (InvoiceApi.schemas.id) {
+            id = this.schemaValidate(id, InvoiceApi.schemas.id);
         }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}/record-payment`;
-        const validate = joi.validate(options, invoiceRequestSchemas.recordPayment);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = this.parsePath(InvoiceApi.paths.recordPayment, { id });
+        options = this.schemaValidate(options, InvoiceApi.schemas.recordPayment);
+        return this.client.request(options);
     }
 
     public recordRefund(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
-        if (idValidate.error) {
-            throw idValidate.error;
+        if (InvoiceApi.schemas.id) {
+            id = this.schemaValidate(id, InvoiceApi.schemas.id);
         }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}/record-refund`;
-        const validate = joi.validate(options, invoiceRequestSchemas.recordRefund);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = this.parsePath(InvoiceApi.paths.recordRefund, { id });
+        options = this.schemaValidate(options, InvoiceApi.schemas.recordRefund);
+        return this.client.request(options);
     }
 
     public qr(id: string, options: Partial<RequestOptions> = {}) {
-        const idValidate = joi.validate(id, invoiceRequestSchemas.id);
-        if (idValidate.error) {
-            throw idValidate.error;
+        if (InvoiceApi.schemas.id) {
+            id = this.schemaValidate(id, InvoiceApi.schemas.id);
         }
-        options.uri = `/v1/invoicing/invoices/${idValidate.value}/qr-code`;
-        const validate = joi.validate(options, invoiceRequestSchemas.qr);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = this.parsePath(InvoiceApi.paths.qr, { id });
+        options = this.schemaValidate(options, InvoiceApi.schemas.qr);
+        return this.client.request(options);
     }
 
     public generateNumber(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate(options, invoiceRequestSchemas.generate);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = InvoiceApi.paths.qr;
+        options = this.schemaValidate(options, InvoiceApi.schemas.generateNumber);
+        return this.client.request(options);
     }
 }

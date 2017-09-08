@@ -1,44 +1,58 @@
 import * as joi from "joi";
 import { Api } from "../abstracts";
 import { Client, RequestOptions } from "../client";
-import schemas from "./schemas";
-import { IWebhook } from "./types";
+import {
+    webhookCreateRequestSchema,
+    webhookDeleteRequestSchema,
+    webhookEventTypeListRequestSchema,
+    webhookGetEventsRequestSchema,
+    webhookGetRequestSchema,
+    webhookIdSchema,
+    webhookListRequestSchema,
+    webhookUpdateRequestSchema,
+} from "./schemas";
+import { IWebhook, IWebhookRequestSchemas } from "./types";
 
-export class WebhookApi extends Api<IWebhook> {
+export class WebhookApi extends Api {
+
+    public static paths = {
+        create: `/v1/notifications/webhooks`,
+        delete: `/v1/notifications/webhooks/{id}`,
+        events: `/v1/notifications/webhooks/{id}/event-types`,
+        get: `/v1/notifications/webhooks/{id}`,
+        list: `/v1/notifications/webhooks`,
+        types: `/v1/notifications/webhooks-event-types`,
+        update: `/v1/notifications/webhooks/{id}`,
+    };
+
+    public static schemas: IWebhookRequestSchemas = {
+        create: webhookCreateRequestSchema,
+        delete: webhookDeleteRequestSchema,
+        events: webhookGetEventsRequestSchema,
+        get: webhookGetRequestSchema,
+        id: webhookIdSchema,
+        list: webhookListRequestSchema,
+        types: webhookEventTypeListRequestSchema,
+        update: webhookUpdateRequestSchema,
+    };
 
     constructor(client: Client) {
-        super(client, schemas, {
-            create: `/v1/notifications/webhooks`,
-            delete: `/v1/notifications/webhooks/{id}`,
-            get: `/v1/notifications/webhooks/{id}`,
-            list: `/v1/notifications/webhooks`,
-            update: `/v1/notifications/webhooks/{id}`,
-        });
+        super(client, WebhookApi.schemas, WebhookApi.paths);
     }
 
     public events(id: string, options: Partial<RequestOptions> = {}) {
-        if (this.schemas.id) {
-            const idValidate = joi.validate(id, this.schemas.id);
-            if (idValidate.error) {
-                throw idValidate.error;
-            }
-            id = idValidate.value;
+        if (WebhookApi.schemas.id) {
+            id = this.schemaValidate(id, WebhookApi.schemas.id);
         }
 
-        options.uri = `/v1/notifications/webhooks/${id}/event-types`;
-        const validate = joi.validate(options, schemas.events);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = this.parsePath(WebhookApi.paths.events, { id });
+        options = this.schemaValidate(options, WebhookApi.schemas.events);
+        return this.client.request(options);
     }
 
     public types(options: Partial<RequestOptions> = {}) {
-        options.uri = `/v1/notifications/webhooks-event-types`;
-        const validate = joi.validate(options, schemas.types);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return this.client.request(validate.value);
+        options.uri = WebhookApi.paths.types;
+        options = this.schemaValidate(options, WebhookApi.schemas.types);
+        return this.client.request(options);
     }
 }

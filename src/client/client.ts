@@ -1,6 +1,8 @@
 import * as joi from "joi";
 import * as request from "request";
 import * as retry from "requestretry";
+// tslint:disable-next-line:no-submodule-imports
+import * as uuid from "uuid/v1";
 import { IConfigureOptions } from "../";
 import { Oauth } from "../oauth";
 import { requestOptionsSchema } from "./schemas";
@@ -15,7 +17,7 @@ export class Client {
     }
 
     public async request(options: Partial<RequestOptions>) {
-        if (options.uri !== this.oauth.path) {
+        if (options.uri !== Oauth.paths.access) {
             const token = await this.oauth.getAccessToken();
             options.headers = {
                 ...options.headers,
@@ -27,6 +29,10 @@ export class Client {
             ...this.config.requestOptions,
             ...options,
         };
+
+        if (!options.headers["PAYPAL-REQUEST-ID"]) {
+            options.headers["PAYPAL-REQUEST-ID"] = uuid();
+        }
 
         const validateRequest = joi.validate(options, requestOptionsSchema, { allowUnknown: true });
         if (validateRequest.error) {

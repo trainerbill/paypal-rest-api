@@ -18,7 +18,7 @@ export class InvoiceModel extends Model<IInvoice> {
 
     public static async search(search: IInvoiceSearchRequest, options: Partial<RequestOptions> = {}) {
         options.body = search;
-        const response = await this.prototype.api.search(options);
+        const response = await this.api.search(options);
         return (response.body as IInvoiceListResponse).invoices.map((invoice) => {
             return new this(invoice);
         });
@@ -29,6 +29,11 @@ export class InvoiceModel extends Model<IInvoice> {
         return (response.body as IInvoiceListResponse).invoices.map((invoice) => {
             return new this(invoice);
         });
+    }
+
+    public static async generate(options: Partial<RequestOptions> = {}) {
+        const response = await this.api.generateNumber(options);
+        return new this(response);
     }
 
     public static init(client: Client) {
@@ -43,19 +48,11 @@ export class InvoiceModel extends Model<IInvoice> {
         super(model);
     }
 
-    public validate() {
-        const validate = joi.validate(this.model, schemas.invoiceSchema);
-        if (validate.error) {
-            throw validate.error;
-        }
-        return validate.value;
-    }
-
     public async send(options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
             throw new Error("Model does not have an id.  Call create first");
         }
-        const response = await InvoiceModel.api.send(this.model.id, options);
+        const response = await this.api.send(this.model.id, options);
         // Call get to refresh the model since send api does not return anything.
         await this.get();
         return this;
@@ -65,7 +62,7 @@ export class InvoiceModel extends Model<IInvoice> {
         if (!this.model.id) {
             throw new Error("Model does not have an id.  Call create first");
         }
-        const response = await InvoiceModel.api.remind(this.model.id, options);
+        const response = await this.api.remind(this.model.id, options);
         return this;
     }
 
@@ -73,7 +70,7 @@ export class InvoiceModel extends Model<IInvoice> {
         if (!this.model.id) {
             throw new Error("Model does not have an id.  Call create first");
         }
-        const response = await InvoiceModel.api.cancel(this.model.id, options);
+        const response = await this.api.cancel(this.model.id, options);
         return this;
     }
 
@@ -86,7 +83,7 @@ export class InvoiceModel extends Model<IInvoice> {
         if (this. model.status !== "DRAFT") {
             throw new Error(`Only draft invoices can be deleted`);
         }
-        super.delete(options);
+        return super.delete(options);
     }
 
     public async recordPayment(payment: IInvoiceRecordPaymentRequest, options: Partial<RequestOptions> = {}) {
@@ -94,7 +91,7 @@ export class InvoiceModel extends Model<IInvoice> {
             throw new Error("Model does not have an id.  Call create first");
         }
         options.body = payment;
-        const response = await InvoiceModel.api.recordPayment(this.model.id, options);
+        const response = await this.api.recordPayment(this.model.id, options);
         await this.get();
     }
 
@@ -103,7 +100,7 @@ export class InvoiceModel extends Model<IInvoice> {
             throw new Error("Model does not have an id.  Call create first");
         }
         options.body = refund;
-        const response = await InvoiceModel.api.recordRefund(this.model.id, options);
+        const response = await this.api.recordRefund(this.model.id, options);
         await this.get();
     }
 
@@ -112,13 +109,8 @@ export class InvoiceModel extends Model<IInvoice> {
             throw new Error("Model does not have an id.  Call create first");
         }
         options.qs = opts;
-        const response = await InvoiceModel.api.qr(this.model.id, options);
+        const response = await this.api.qr(this.model.id, options);
         this.qrImage = response.image;
         return this.qrImage;
-    }
-
-    public async generateNumber(options: Partial<RequestOptions> = {}) {
-        const response = await InvoiceModel.api.generateNumber(options);
-        return response.number;
     }
 }

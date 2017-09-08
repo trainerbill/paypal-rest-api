@@ -1,5 +1,3 @@
-import { Client } from "../client";
-import { WebhookApi } from "./api";
 import { WebhookModel } from "./model";
 
 export * from "./types";

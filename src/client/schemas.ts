@@ -1,6 +1,4 @@
 import * as joi from "joi";
-// tslint:disable-next-line:no-submodule-imports
-import * as uuid from "uuid/v1";
 
 export const clientHeadersSchema = joi.object({
     "Accept": joi.string().default("application/json"),
@@ -10,8 +8,8 @@ export const clientHeadersSchema = joi.object({
 
 export const defaultRequestOptionsSchema = joi.object({
     baseUrl: joi.string()
-                    .valid(["https://api.paypal.com/", "https://api.sandbox.paypal.com/"])
-                    .default("https://api.paypal.com/"),
+                    .valid(["https://api.paypal.com", "https://api.sandbox.paypal.com"])
+                    .default("https://api.paypal.com"),
     headers: clientHeadersSchema.default(),
     json: joi.boolean().default(true),
     maxAttempts: joi.number().min(1).default(5),
@@ -23,7 +21,7 @@ export const defaultRequestOptionsSchema = joi.object({
 
 export const requestOptionsSchema = defaultRequestOptionsSchema.keys({
     headers: clientHeadersSchema.keys({
-        "PAYPAL-REQUEST-ID": joi.string().min(15).default(uuid()),
+        "PAYPAL-REQUEST-ID": joi.string().min(15).required(),
     }).default(),
     method: joi.string().required(),
     uri: joi.string().required(),

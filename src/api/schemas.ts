@@ -2,12 +2,12 @@ import * as joi from "joi";
 import * as us from "us";
 import { defaultRequestOptionsSchema } from "../client/schemas";
 
-export const ClientIdSchema = joi.string().empty("");
-export const SecretSchema = joi.string().empty("");
+export const clientIdSchema = joi.string().empty("");
+export const secretSchema = joi.string().empty("");
 
-export const ConfigurationSchema = joi.object({
-    client_id: ClientIdSchema.required(),
-    client_secret: SecretSchema.required(),
+export const configurationSchema = joi.object({
+    client_id: clientIdSchema.required(),
+    client_secret: secretSchema.required(),
     mode: joi.valid(["production", "sandbox"]).required(),
     requestOptions: defaultRequestOptionsSchema.default(),
 });

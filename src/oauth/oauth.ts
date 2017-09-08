@@ -1,32 +1,56 @@
 import * as joi from "joi";
 import * as request from "request";
 import * as retry from "requestretry";
+import { Api } from "../abstracts";
 import { Client, RequestMethod, RequestOptions } from "../client";
-import { OauthAccessTokenRequestSchema } from "./schemas";
-import * as types from "./types";
+import { clientIdSchema, oauthAccessTokenRequestSchema, secretSchema } from "./schemas";
+import { IAccessToken } from "./types";
 
-export class Oauth {
+export class Oauth extends Api {
 
-    public path = "/v1/oauth2/token";
-    private token: types.IAccessToken;
+    public static paths = {
+        access: "/v1/oauth2/token",
+    };
 
-    constructor(private client: Client, private clientId: string, private clientSecret: string) {}
+    public static schemas = {
+        access: oauthAccessTokenRequestSchema,
+        clientId: clientIdSchema,
+        clientSecret: secretSchema,
+    };
+
+    private token: IAccessToken;
+
+    constructor(client: Client, private _clientId: string, private _clientSecret: string) {
+        super(client, {}, {});
+    }
+
+    public get clientId() {
+        return this._clientId;
+    }
+
+    public set clientId(id) {
+        this._clientId = this.schemaValidate(id, Oauth.schemas.clientId);
+    }
+
+    public get clientSecret() {
+        return this._clientSecret;
+    }
+
+    public set clientSecret(id) {
+        this._clientSecret = this.schemaValidate(id, Oauth.schemas.clientSecret);
+    }
 
     public requestAccessToken(options: Partial<RequestOptions> = {}) {
-        const validate = joi.validate({
+        const validate = this.schemaValidate({
             auth: {
                 password: this.clientSecret,
                 user: this.clientId,
             },
-        }, OauthAccessTokenRequestSchema);
-
-        if (validate.error) {
-            throw validate.error;
-        }
+        }, Oauth.schemas.access);
 
         return this.client.request({
             ...options,
-            ...validate.value,
+            ...validate,
         });
     }
 
@@ -38,7 +62,7 @@ export class Oauth {
         return this.token;
     }
 
-    public setAccessToken(token: types.IAccessToken) {
+    public setAccessToken(token: IAccessToken) {
         token.expiration = new Date().setSeconds(token.expires_in);
         this.token = token;
     }

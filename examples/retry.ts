@@ -3,7 +3,7 @@ import { config } from "./config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    const response = await paypal.request("v1/invoicing/invoices/", {
+    const response = await paypal.client.request({
         body: {
             // https://developer.paypal.com/docs/api/invoicing/#invoices_create
             merchant_info: {
@@ -13,6 +13,7 @@ async function example() {
         maxAttempts: 3,
         method: "POST",
         retryDelay: 500,
+        uri: "v1/invoicing/invoices/",
     });
     return response;
 }

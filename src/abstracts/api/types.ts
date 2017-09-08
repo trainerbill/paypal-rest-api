@@ -26,3 +26,7 @@ export interface IUpdateRequestParam {
 }
 
 export type UpdateRequest = IUpdateRequestParam[];
+
+export interface IPathReplacers {
+    id: string;
+}

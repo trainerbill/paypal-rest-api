@@ -1,233 +1,50 @@
 import * as tape from "blue-tape";
-import * as request from "requestretry";
+import * as joi from "joi";
 import * as sinon from "sinon";
-import { PayPalRestApi } from "../src";
+import { Client, InvoiceModel, Oauth, PayPalRestApi, WebhookEventModel, WebhookModel } from "../src";
 import { config } from "./config";
 
-tape("request method", async (t) => {
-
-  t.test("failure should", async (st) => {
+tape("api constructor should", async (t) => {
     const sandbox = sinon.sandbox.create();
-    const paypal = new PayPalRestApi(config);
-    const error = { message: "error" };
-    const postStub = sandbox.stub(request, "post").rejects(error);
-    try {
-      const response = await paypal.request("/testurl", {
-        body: {
-          test: "test",
-        },
-        method: "POST",
-      });
-      st.fail("not succeed");
-    } catch (err) {
-      st.equal(err === error, true, "throw error");
-    }
-    sandbox.restore();
-  });
+    const invoiceInitSpy = sandbox.spy(InvoiceModel, "init");
+    const webhookEventInitSpy = sandbox.spy(WebhookEventModel, "init");
+    const webhookInitSpy = sandbox.spy(WebhookModel, "init");
+    let paypal = new PayPalRestApi(config);
 
-  t.test("with valid access token", async (st) => {
-    const sandbox = sinon.sandbox.create();
-    const paypal = new PayPalRestApi(config);
-    paypal.setAccessToken({
-      access_token: "testy",
-      app_id: "test",
-      expires_in: 200000,
-      scope: "test",
-      token_type: "test",
+    t.equal(paypal.client instanceof Client, true, "construct an instance of Client");
+
+    t.equal(paypal.invoice === InvoiceModel, true, "expose invoice model");
+    t.equal(invoiceInitSpy.calledWith(paypal.client), true, "initialize invoice model");
+
+    t.equal(paypal.webhook === WebhookModel, true, "expose webhook model");
+    t.equal(webhookInitSpy.calledWith(paypal.client), true, "initialize webhook model");
+
+    t.equal(paypal.webhookEvent === WebhookEventModel, true, "expose webhook event model");
+    t.equal(webhookEventInitSpy.calledWith(paypal.client), true, "initialize webhook event model");
+
+    // tslint:disable-next-line:max-line-length
+    t.equal(paypal.config.requestOptions.baseUrl === "https://api.sandbox.paypal.com", true, "configure sandbox environment");
+
+    paypal = new PayPalRestApi({
+        client_id: "asdfasdfasdfasfd",
+        client_secret: "asdfasdfasdfasdf",
+        mode: "production",
     });
-    const postStub = sandbox.stub(request, "post");
+    // tslint:disable-next-line:max-line-length
+    t.equal(paypal.config.requestOptions.baseUrl === "https://api.paypal.com", true, "configure production environment");
 
-    postStub
-      .onCall(0)
-      .resolves({
-        id: "invoiceid",
-      });
-
-    const req = {
-      merchant_info: {
-        business_name: "testy",
-      },
-    };
-    try {
-      const response = await paypal.request("/testurl", {
-        body: req,
-        method: "POST",
-      });
-      st.pass("succeed");
-    } catch (err) {
-      st.fail(`not throw an error: ${err.message}`);
-    }
-    st.equal(postStub.calledOnce, true, "make one request");
-    st.equal(postStub.withArgs(sinon.match({
-      body: req,
-      headers: {
-        Authorization: "Bearer testy",
-      },
-    })).called, true, "set the authorization header and call api with payload");
     sandbox.restore();
-  });
-
-  t.test("with no access token", async (st) => {
-    const sandbox = sinon.sandbox.create();
-    const paypal = new PayPalRestApi(config);
-    const postStub = sandbox.stub(request, "post");
-    postStub
-      .onCall(0)
-      .resolves({
-        body: {
-          access_token: "testy",
-          expires_in: 200,
-        },
-      });
-
-    postStub
-      .onCall(1)
-      .returns({
-        id: "invoiceid",
-      });
-
-    const req = {
-      merchant_info: {
-        business_name: "testy",
-      },
-    };
-    try {
-      const response = await paypal.request("/testurl", {
-        body: req,
-        method: "POST",
-      });
-      st.pass("succeed");
-    } catch (err) {
-      st.fail(`not throw an error: ${err.message}`);
-    }
-    st.equal(postStub.calledTwice, true, "make two requests");
-    st.equal(postStub.withArgs(sinon.match({
-      auth: {
-        password: config.client_secret,
-        user: config.client_id,
-      },
-      uri: "https://api.sandbox.paypal.com/v1/oauth2/token",
-    })).called, true, "get an access token");
-    st.equal(postStub.withArgs(sinon.match({
-      body: req,
-      headers: {
-        Authorization: "Bearer testy",
-      },
-    })).called, true, "set the authorization header and call api with payload");
-    sandbox.restore();
-  });
-
-  t.test("with expired access token should", async (st) => {
-    const sandbox = sinon.sandbox.create();
-    const paypal = new PayPalRestApi(config);
-    paypal.setAccessToken({
-      access_token: "testy",
-      app_id: "test",
-      expires_in: -2,
-      scope: "test",
-      token_type: "test",
-    });
-
-    const postStub = sandbox.stub(request, "post");
-    postStub
-      .onCall(0)
-      .resolves({
-        body: {
-          access_token: "testy",
-          expires_in: 200,
-        },
-      });
-
-    postStub
-      .onCall(1)
-      .returns({
-        id: "invoiceid",
-      });
-
-    const req = {
-      merchant_info: {
-        business_name: "testy",
-      },
-    };
-
-    try {
-      const response = await paypal.request("/testurl", {
-        body: req,
-        method: "POST",
-      });
-      st.pass("succeed");
-    } catch (err) {
-      st.fail(`not throw an error: ${err.message}`);
-    }
-
-    st.equal(postStub.calledTwice, true, "make two requests");
-    st.equal(postStub.withArgs(sinon.match({
-      auth: {
-        password: config.client_secret,
-        user: config.client_id,
-      },
-      uri: "https://api.sandbox.paypal.com/v1/oauth2/token",
-    })).called, true, "get an access token");
-    st.equal(postStub.withArgs(sinon.match({
-      body: req,
-      headers: {
-        Authorization: "Bearer testy",
-      },
-    })).called, true, "set the authorization header and call api with payload");
-    sandbox.restore();
-  });
-
 });
 
-tape("execute method", async (t) => {
-
-  t.test("succeed should", async (st) => {
-    const sandbox = sinon.sandbox.create();
-    const paypal = new PayPalRestApi(config);
-    const requestStub = sandbox.stub(paypal, "request").resolves({ body: { test: "ok" } });
+tape("api constructor should", async (t) => {
     try {
-      const response = await paypal.execute("createInvoice", {
-        body: {
-          merchant_info: {
-            business_name: "testy",
-          },
-        },
-      });
-      st.equal(requestStub.called, true, "call request function");
-      st.equal(response.body.test === "ok", true, "respond with result");
+        const paypal = new PayPalRestApi({
+            client_id: "",
+            client_secret: "",
+            mode: "asdf",
+        });
+        t.fail("throw validation error");
     } catch (err) {
-      st.fail(`not throw an error: ${err.message}`);
+        t.equal(err.name === "ValidationError", true, "throw validation error");
     }
-    sandbox.restore();
-  });
-
-  t.test("fail should", async (st) => {
-    const sandbox = sinon.sandbox.create();
-    const paypal = new PayPalRestApi({ ...config, ...{ validate: true }});
-    const requestStub = sandbox.stub(paypal, "request").resolves({ body: { test: "ok" } });
-    try {
-      const response = await paypal.execute("createInvoice", {
-        body: {
-          huh: "test",
-        },
-      });
-      st.fail("throw validation error");
-    } catch (err) {
-      st.pass("throw validation error");
-      st.equal(requestStub.called, false, "not call request function");
-    }
-
-    try {
-      const response = await paypal.execute("testyMcTesterson", {
-        body: {
-          huh: "test",
-        },
-      });
-      st.fail("throw api not found error");
-    } catch (err) {
-      st.pass("throw api not found error");
-      st.equal(requestStub.called, false, "not call request function");
-    }
-    sandbox.restore();
-  });
 });

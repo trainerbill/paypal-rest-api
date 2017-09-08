@@ -227,23 +227,4 @@ export const invoiceGenerateNumberRequestSchema = joi.object({
     uri: joi.string().default("/v1/invoicing/invoices/next-invoice-number"),
 });
 
-export const invoiceRequestSchemas: IInvoiceRequestSchemas  = {
-    id: invoiceIdSchema,
-    get: invoiceGetRequestSchema,
-    create: invoiceCreateRequestSchema,
-    cancel: invoiceCancelRequestSchema,
-    delete: invoiceDeleteRequestSchema,
-    update: invoiceUpdateRequestSchema,
-    send: invoiceSendRequestSchema,
-    search: invoiceSearchRequestSchema,
-    remind: invoiceRemindRequestSchema,
-    recordPayment: invoiceRecordPaymentRequestSchema,
-    recordRefund: invoiceRecordRefundRequestSchema,
-    qr: invoiceQrRequestSchema,
-    generate: invoiceGenerateNumberRequestSchema,
-    list: invoiceListRequestSchema,
-};
-
-export default invoiceRequestSchemas;
-
 // tslint:enable:object-literal-sort-keys

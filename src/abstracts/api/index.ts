@@ -1,12 +1,24 @@
 import * as joi from "joi";
 import { Client, RequestOptions } from "../../client";
-import { IApiPaths, IApiSchemas, UpdateRequest } from "./types";
+import { IApiPaths, IApiSchemas, IPathReplacers, UpdateRequest } from "./types";
 
 export * from "./types";
 
-export class Api<T> {
+export class Api {
 
-    constructor(protected client: Client, protected schemas: IApiSchemas, protected paths: IApiPaths) {}
+    constructor(private _client: Client, private _schemas: IApiSchemas, private _paths: IApiPaths) {}
+
+    get client() {
+        return this._client;
+    }
+
+    get schemas() {
+        return this._schemas;
+    }
+
+    get paths() {
+        return this._paths;
+    }
 
     public async get(id: string, options: Partial<RequestOptions> = {}) {
         if (!this.paths.get) {
@@ -15,7 +27,7 @@ export class Api<T> {
         if (this.schemas.id) {
             id = this.schemaValidate(id, this.schemas.id);
         }
-        options.uri = this.paths.get.replace("{id}", id);
+        options.uri = this.parsePath(this.paths.get, { id });
         options = this.schemaValidate(options, this.schemas.get);
         return this.client.request(options);
     }
@@ -35,7 +47,7 @@ export class Api<T> {
         if (this.schemas.id) {
             id = this.schemaValidate(id, this.schemas.id);
         }
-        options.uri = this.paths.delete.replace("{id}", id);
+        options.uri = this.parsePath(this.paths.delete, { id });
         options = this.schemaValidate(options, this.schemas.delete);
         return this.client.request(options);
     }
@@ -56,14 +68,14 @@ export class Api<T> {
         return this.client.request(options);
     }
 
-    public update(id: string, payload: UpdateRequest | T, options: Partial<RequestOptions> = {}) {
+    public update(id: string, payload: UpdateRequest | any, options: Partial<RequestOptions> = {}) {
         if (!this.paths.update) {
             throw new Error("Update path not available for this api");
         }
         if (this.schemas.id) {
             id = this.schemaValidate(id, this.schemas.id);
         }
-        options.uri = this.paths.update.replace("{id}", id);
+        options.uri = this.parsePath(this.paths.update, { id });
         options.body = payload;
         options = this.schemaValidate(options, this.schemas.update, {
             stripUnknown: true,
@@ -71,12 +83,17 @@ export class Api<T> {
         return this.client.request(options);
     }
 
-    public schemaValidate(what: any, schema: joi.Schema, additional: joi.ValidationOptions = {}) {
+    protected schemaValidate(what: any, schema: joi.Schema, additional: joi.ValidationOptions = {}) {
         const validate = joi.validate(what, schema, additional);
         if (validate.error) {
             throw validate.error;
         }
         return validate.value;
+    }
+
+    protected parsePath(path: string, replacers: IPathReplacers) {
+        const rpath = path.replace("{id}", replacers.id);
+        return rpath;
     }
 
 }

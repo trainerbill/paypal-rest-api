@@ -62,11 +62,7 @@ export const webhookEventTypeSchema = joi.object({
 export const webhookEventTypesSchema = joi.array().min(1).items(webhookEventTypeSchema);
 
 export const webhookSchema = joi.object({
-    event_types: joi.array().items(
-        joi.object({
-            name: joi.string().valid(webhookEventTypeSchema),
-        }),
-    ).min(1).required(),
+    event_types: webhookEventTypesSchema.required(),
     url: joi.string().uri({
         scheme: [ "https" ],
     }).required(),
@@ -111,16 +107,3 @@ export const webhookEventTypeListRequestSchema = joi.object({
     method: joi.string().default("GET"),
     uri: joi.string().default(/\/v1\/notifications\/webhooks-event-types/),
 });
-
-export const webhookRequestSchemas: IWebhookRequestSchemas = {
-    create: webhookCreateRequestSchema,
-    delete: webhookDeleteRequestSchema,
-    events: webhookGetEventsRequestSchema,
-    get: webhookGetRequestSchema,
-    id: webhookIdSchema,
-    list: webhookListRequestSchema,
-    types: webhookEventTypeListRequestSchema,
-    update: webhookUpdateRequestSchema,
-};
-
-export default webhookRequestSchemas;
