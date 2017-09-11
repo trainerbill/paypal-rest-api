@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "joi": "^10.6.0",
+    "lodash.get": "^4.4.2",
     "request": "^2.81.0",
     "requestretry": "^1.12.2",
     "us": "^2.0.0",
@@ -42,7 +43,9 @@
   "devDependencies": {
     "@types/blue-tape": "^0.1.31",
     "@types/joi": "^10.4.1",
+    "@types/lodash.get": "^4.4.3",
     "@types/node": "^7.0.0",
+    "@types/opn": "^3.0.28",
     "@types/request": "^2.0.3",
     "@types/requestretry": "^1.12.1",
     "@types/sinon": "^2.3.3",
@@ -50,6 +53,7 @@
     "blue-tape": "^1.0.0",
     "coveralls": "^2.0.0",
     "nyc": "^10.0.0",
+    "opn": "^5.1.0",
     "rimraf": "^2.0.0",
     "sinon": "^3.2.1",
     "tap-spec": "^4.1.1",

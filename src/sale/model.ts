@@ -1,10 +1,12 @@
 import * as joi from "joi";
 import { Model } from "../abstracts";
 import { Client, RequestOptions } from "../client";
-import { SaleApi } from "./api";
 // import { ISale } from "./types";
+import { PaymentModel } from "../payment";
+import { SaleApi } from "./api";
+import { ISale } from "./types";
 
-export class SaleModel extends Model<any> {
+export class SaleModel extends Model<ISale> {
 
     public static api: SaleApi;
 
@@ -19,7 +21,15 @@ export class SaleModel extends Model<any> {
         SaleModel.prototype.api = api;
     }
 
-    constructor(public model: any) {
+    constructor(model: PaymentModel | ISale) {
+
+        // Grab the first sale from related resources
+        if (model instanceof PaymentModel) {
+            model = model.model.transactions[0].related_resources.map((resource) => {
+                return resource.sale;
+            })[0];
+        }
+
         super(model);
     }
 

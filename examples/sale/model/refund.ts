@@ -8,18 +8,21 @@ async function example() {
             count: 100,
         },
     });
-    const payment = payments.filter((lpayment) => {
-        // tslint:disable-next-line:max-line-length
-        if (lpayment.model.state === "created" && lpayment.model.payer && lpayment.model.payer.payer_info && lpayment.model.payer.payer_info.payer_id) {
-            return lpayment;
-        }
+    const refundablePayment = payments.filter((lpayment) => {
+        return lpayment.model.transactions[0].related_resources.filter((resource) => {
+            if (resource.sale && resource.sale.state === "completed") {
+                return resource.sale;
+            }
+        });
     })[0];
-    if (!payment) {
-        throw new Error("No approved payment found.  Run the create example and approve the payment first");
+    if (!refundablePayment) {
+        throw new Error("No refundable payment found.  Run the execute payment example first");
     }
 
+    const sale = new paypal.sale(refundablePayment);
+    await sale.refund();
 
-    //return JSON.stringify(sale.model);
+    return JSON.stringify(sale.model);
 }
 
 // tslint:disable-next-line:no-console

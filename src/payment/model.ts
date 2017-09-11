@@ -1,13 +1,14 @@
-import * as joi from "joi";
+import { Schema } from "joi";
 import { Model } from "../abstracts";
 import { Client, RequestOptions } from "../client";
 import { PaymentApi } from "./api";
-import * as schemas from "./schemas";
+import { paymentSchema } from "./schemas";
 import { IPayment, IPaymentListResponse } from "./types";
 
 export class PaymentModel extends Model<IPayment> {
 
     public static api: PaymentApi;
+    public static schema: Schema = paymentSchema;
 
     public static async list(options: Partial<RequestOptions> = {}) {
         const response = await this.api.list(options);
@@ -22,8 +23,8 @@ export class PaymentModel extends Model<IPayment> {
         PaymentModel.prototype.api = api;
     }
 
-    constructor(model: any) {
-        super(model);
+    constructor(model: Partial<IPayment>) {
+        super(model, PaymentModel.schema);
     }
 
     public async execute(options: Partial<RequestOptions> = {}) {

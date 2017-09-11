@@ -1,8 +1,8 @@
-import * as joi from "joi";
+import { Schema } from "joi";
 import { Model } from "../abstracts/model";
 import { Client, RequestOptions } from "../client";
 import { InvoiceApi } from "./api";
-import * as schemas from "./schemas";
+import { invoiceSchema } from "./schemas";
 import {
     IInvoice,
     IInvoiceListResponse,
@@ -15,6 +15,7 @@ import {
 export class InvoiceModel extends Model<IInvoice> {
 
     public static api: InvoiceApi;
+    public static schema: Schema = invoiceSchema;
 
     public static async search(search: IInvoiceSearchRequest, options: Partial<RequestOptions> = {}) {
         options.body = search;
@@ -45,7 +46,7 @@ export class InvoiceModel extends Model<IInvoice> {
     public qrImage: any;
 
     constructor(public model: IInvoice) {
-        super(model);
+        super(model, InvoiceModel.schema);
     }
 
     public async send(options: Partial<RequestOptions> = {}) {

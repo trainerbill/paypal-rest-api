@@ -1,3 +1,5 @@
+import { Schema } from "joi";
+import { get as lget } from "lodash";
 import { Client, RequestOptions } from "../../client";
 import { Api, UpdateRequest } from "../api";
 import { IModel } from "./types";
@@ -9,7 +11,7 @@ export class Model<T> {
     public static api: any;
     private _api: any;
 
-    constructor(public model: IModel & T) {
+    constructor(private _model: Partial<IModel & T>, private _schema?: Schema) {
         if (!(this.api)) {
             throw new Error("Api static not set");
         }
@@ -21,6 +23,17 @@ export class Model<T> {
 
     set api(api) {
         this._api = api;
+    }
+
+    get model() {
+        return this._model;
+    }
+
+    set model(model) {
+        if (this._schema && model !== null) {
+            model = this.api.schemaValidate(model, this._schema, { allowUnknown: true });
+        }
+        this._model = model;
     }
 
     public async create(options: Partial<RequestOptions> = {}) {
@@ -59,5 +72,9 @@ export class Model<T> {
         const response = await this.api.get(this.model.id, options);
         this.model = response.body;
         return this;
+    }
+
+    public getModelProperty(path: string) {
+        return lget(this.model, path);
     }
 }

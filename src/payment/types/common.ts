@@ -1,4 +1,5 @@
 import { IAddress, ILink, IPhone } from "../../api/types";
+import { ISale } from "../../sale/types";
 
 export interface IPayment {
     readonly id?: string;
@@ -56,7 +57,7 @@ export interface ITransaction {
     };
     notify_url?: string;
     order_url?: string;
-    readonly related_resources?: IRelatedResources;
+    readonly related_resources?: IRelatedResources[];
 }
 
 export interface ITransactionItem {
@@ -95,7 +96,7 @@ export interface IPayee {
 }
 
 export interface IRelatedResources {
-    readonly sale?: ISaleResource;
+    readonly sale?: ISale;
     readonly authorization?: IAuthorizationResource;
     readonly order?: any;
     readonly capture?: ICaptureResource;
@@ -117,16 +118,6 @@ export interface IResource {
     readonly create_time?: string;
     readonly update_time?: string;
     readonly links?: ILink[];
-}
-
-export interface ISaleResource extends IResource {
-    readonly purchase_unit_reference_id?: string;
-    readonly clearing_time?: string;
-    readonly payment_hold_status?: string;
-    readonly payment_hold_reasons?: string[];
-    readonly transaction_fee?: ICurrency;
-    readonly exchange_rate?: string;
-    readonly billing_agreement_id?: string;
 }
 
 export interface IAuthorizationResource extends IResource {

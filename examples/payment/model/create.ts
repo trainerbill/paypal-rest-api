@@ -1,17 +1,10 @@
+import * as opn from "opn";
 import { PayPalRestApi } from "../../../src";
 import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
     const payment = new paypal.payment({
-        intent: "sale",
-        payer: {
-            payment_method: "paypal",
-        },
-        redirect_urls: {
-            cancel_url: "http://localhost",
-            return_url: "http://localhost",
-        },
         transactions: [{
             amount: {
                 currency: "USD",
@@ -27,11 +20,14 @@ async function example() {
         path: "/transactions/0/description",
         value: "Updated Description for payment",
     }]);
-    // tslint:disable-next-line:max-line-length
-    // tslint:disable-next-line:no-console
-    console.log("Open the following link and approve the payment", `https://www.sandbox.paypal.com/checkoutnow?token=${payment.model.id}`);
-    return JSON.stringify(payment.model);
+
+    return payment.model;
 }
 
-// tslint:disable-next-line:no-console
-example().then((response) => console.log(response)).catch((err) => console.error(err));
+// tslint:disable
+example().then((response) => {
+    console.log(JSON.stringify(response));
+    opn(`https://www.sandbox.paypal.com/checkoutnow?token=${response.id}`);
+    console.log("After approving the transaction you can run the execute example.");
+}).catch((err) => console.error(err));
+// tslint:enable

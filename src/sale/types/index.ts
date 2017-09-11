@@ -1,30 +1,14 @@
 import { Schema } from "joi";
-import { IApiSchemas } from "../../abstracts/api";
 import { IModel } from "../../abstracts/model";
-import { ILink, IResponse } from "../../api/types";
+import { ICurrency, ILink, IResponse } from "../../api/types";
+import { IResource } from "../../payment/types";
 
-export interface IWebhook extends IModel {
-    event_types: IWebhookEventType[];
-    readonly id?: string;
-    readonly links?: ILink[];
-    url: string;
-}
-
-export interface IWebhookListResponse {
-    readonly webhooks: IWebhook[];
-}
-
-export interface IWebhookRequestSchemas extends IApiSchemas {
-    events: Schema;
-    types: Schema;
-}
-
-export interface IWebhookEventType {
-    name: string;
-    readonly description?: string;
-    readonly status?: string;
-}
-
-export interface IWebhookEventTypeListResponse {
-    readonly events: IWebhookEventType[];
+export interface ISale extends IResource {
+    readonly purchase_unit_reference_id?: string;
+    readonly clearing_time?: string;
+    readonly payment_hold_status?: string;
+    readonly payment_hold_reasons?: string[];
+    readonly transaction_fee?: ICurrency;
+    readonly exchange_rate?: string;
+    readonly billing_agreement_id?: string;
 }

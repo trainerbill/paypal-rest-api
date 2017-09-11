@@ -74,15 +74,15 @@ export const transactionSchema = joi.object().keys({
 
 export const paymentSchema = joi.object().keys({
     experience_profile_id: joi.string().trim().empty("").optional(),
-    intent: joi.date().empty("").valid(["sale", "authorize", "order"]).required(),
+    intent: joi.date().empty("").valid(["sale", "authorize", "order"]).default("sale"),
     note_to_payer: joi.string().trim().empty("").max(165).optional(),
     payer: joi.object().keys({
        payment_method: joi.string().valid("paypal").default("paypal"),
-    }).required(),
+    }).default(),
     redirect_urls: joi.object().keys({
-        cancel_url: joi.string().trim().empty("").max(2048).required(),
-        return_url: joi.string().trim().empty("").max(2048).required(),
-    }).optional(),
+        cancel_url: joi.string().trim().empty("").max(2048).default("http://localhost"),
+        return_url: joi.string().trim().empty("").max(2048).default("http://localhost"),
+    }).default(),
     transactions: joi.array().items(transactionSchema).min(1).required(),
 });
 
@@ -124,4 +124,11 @@ export const listPaymentRequestSchema = joi.object({
         start_time: joi.string().optional(),
     }).default(),
     uri: joi.string().required(),
+});
+
+export const fraudManagementFiltersSchema = joi.object({
+    description: joi.string().optional(),
+    filter_id: joi.string().optional(),
+    filter_type: joi.string().optional(),
+    name: joi.string().optional(),
 });
