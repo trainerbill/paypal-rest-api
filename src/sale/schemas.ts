@@ -1,109 +1,22 @@
 import * as joi from "joi";
-import { updateRequestSchema } from "../api/schemas";
-import { IWebhookRequestSchemas } from "./types";
+import { paypalAmountSchema, paypalItemSchema } from "../payment/schemas";
 
-export const webhookIdSchema = joi.string().alphanum().min(1);
+export const saleIdSchema = joi.string().alphanum().min(1);
 
-export const webhookEventTypeNameSchema = joi.string().valid([
-    "BILLING.PLAN.CREATED",
-    "BILLING.PLAN.UPDATED",
-    "BILLING.SUBSCRIPTION.CANCELLED",
-    "BILLING.SUBSCRIPTION.CREATED",
-    "BILLING.SUBSCRIPTION.RE-ACTIVATED",
-    "BILLING.SUBSCRIPTION.SUSPENDED",
-    "BILLING.SUBSCRIPTION.UPDATED",
-    "CUSTOMER.DISPUTE.CREATED",
-    "CUSTOMER.DISPUTE.RESOLVED",
-    "CUSTOMER.DISPUTE.UPDATED",
-    "IDENTITY.AUTHORIZATION-CONSENT.REVOKED",
-    "INVOICING.INVOICE.CANCELLED",
-    "INVOICING.INVOICE.CREATED",
-    "INVOICING.INVOICE.PAID",
-    "INVOICING.INVOICE.REFUNDED",
-    "INVOICING.INVOICE.UPDATED",
-    "MERCHANT.ONBOARDING.COMPLETED",
-    "PAYMENT.AUTHORIZATION.CREATED",
-    "PAYMENT.AUTHORIZATION.VOIDED",
-    "PAYMENT.CAPTURE.COMPLETED",
-    "PAYMENT.CAPTURE.DENIED",
-    "PAYMENT.CAPTURE.PENDING",
-    "PAYMENT.CAPTURE.REFUNDED",
-    "PAYMENT.CAPTURE.REVERSED",
-    "PAYMENT.ORDER.CANCELLED",
-    "PAYMENT.ORDER.CREATED",
-    "PAYMENT.PAYOUTS-ITEM.BLOCKED",
-    "PAYMENT.PAYOUTS-ITEM.CANCELED",
-    "PAYMENT.PAYOUTS-ITEM.DENIED",
-    "PAYMENT.PAYOUTS-ITEM.FAILED",
-    "PAYMENT.PAYOUTS-ITEM.HELD",
-    "PAYMENT.PAYOUTS-ITEM.REFUNDED",
-    "PAYMENT.PAYOUTS-ITEM.RETURNED",
-    "PAYMENT.PAYOUTS-ITEM.SUCCEEDED",
-    "PAYMENT.PAYOUTS-ITEM.UNCLAIMED",
-    "PAYMENT.PAYOUTSBATCH.DENIED",
-    "PAYMENT.PAYOUTSBATCH.PROCESSING",
-    "PAYMENT.PAYOUTSBATCH.SUCCESS",
-    "PAYMENT.SALE.COMPLETED",
-    "PAYMENT.SALE.DENIED",
-    "PAYMENT.SALE.PENDING",
-    "PAYMENT.SALE.REFUNDED",
-    "PAYMENT.SALE.REVERSED",
-    "VAULT.CREDIT-CARD.CREATED",
-    "VAULT.CREDIT-CARD.DELETED",
-    "VAULT.CREDIT-CARD.UPDATED",
-]);
-
-export const webhookEventTypeSchema = joi.object({
-    description: joi.string().optional(),
-    name: webhookEventTypeNameSchema.required(),
-    status: joi.string().optional(),
-});
-
-export const webhookEventTypesSchema = joi.array().min(1).items(webhookEventTypeSchema);
-
-export const webhookSchema = joi.object({
-    event_types: webhookEventTypesSchema.required(),
-    url: joi.string().uri({
-        scheme: [ "https" ],
-    }).required(),
-});
-
-export const webhookCreateRequestSchema = joi.object({
-    body: webhookSchema.required(),
-    method: joi.string().default("POST"),
-    uri: joi.string().default("/v1/notifications/webhooks"),
-});
-
-export const webhookGetRequestSchema = joi.object({
-    method: joi.string().default("GET"),
-    uri: joi.string().regex(/\/v1\/notifications\/webhooks\/.*/).required(),
-});
-
-export const webhookListRequestSchema = joi.object({
-    method: joi.string().default("GET"),
-    qs: joi.object({
-        anchor_type: joi.string().valid(["APPLICATION", "ACCOUNT"]).default("APPLICATION"),
-    }).default(),
-    uri: joi.string().default("/v1/notifications/webhooks"),
-});
-
-export const webhookUpdateRequestSchema = joi.object({
-    body: updateRequestSchema.required(),
-    method: joi.string().default("PATCH"),
-    uri: joi.string().regex(/\/v1\/notifications\/webhooks\/.*/).required(),
-});
-
-export const webhookDeleteRequestSchema = joi.object({
-    method: joi.string().default("DELETE"),
-    uri: joi.string().regex(/\/v1\/notifications\/webhooks\/.*/).required(),
-});
-
-export const webhookGetEventsRequestSchema = joi.object({
+export const saleGetRequestSchema = joi.object({
     method: joi.string().default("GET"),
     uri: joi.string().required(),
 });
 
-export const webhookEventTypeListRequestSchema = joi.object({
-    method: joi.string().default("GET"),
-    uri: joi.string().default(/\/v1\/notifications\/webhooks-event-types/),
+export const saleRefundRequestSchema = joi.object({
+    body: joi.object({
+        amount: paypalAmountSchema.optional(),
+        invoice_number: joi.string().max(127).optional(),
+        items: joi.array().items(paypalItemSchema).min(1).optional(),
+        payer_info: joi.any().optional(),
+        refund_advice: joi.boolean().optional(),
+        refund_source: joi.string().valid(["INSTANT_FUNDING_SOURCE", "ECHECK", "UNRESTRICTED"]).default("UNRESTRICTED"),
+    }).default({}),
+    method: joi.string().default("POST"),
+    uri: joi.string().required(),
 });

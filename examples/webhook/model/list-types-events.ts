@@ -3,7 +3,7 @@ import { config } from "../../config";
 // tslint:disable:no-console
 const paypal = new PayPalRestApi(config);
 async function example() {
-    console.log("WebhookTypes", await paypal.webhook.types());
+    console.log("WebhookTypes", await paypal.webhook.api.types());
     const webhooks = await paypal.webhook.list();
     const webhook = webhooks[0];
     webhook.model.event_types = null;

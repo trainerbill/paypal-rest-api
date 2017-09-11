@@ -3,6 +3,7 @@ import { Client } from "../client";
 import Invoice from "../invoice";
 import { Oauth } from "../oauth";
 import Payment from "../payment";
+import Sale from "../sale";
 import Webhook from "../webhook";
 import WebhookEvent from "../webhookEvent";
 import { configurationSchema } from "./schemas";
@@ -20,6 +21,7 @@ export class PayPalRestApi {
         WebhookEvent.init(this.client);
         Invoice.init(this.client);
         Payment.init(this.client);
+        Sale.init(this.client);
     }
 
     get config() {
@@ -60,6 +62,10 @@ export class PayPalRestApi {
 
     get payment() {
         return Payment;
+    }
+
+    get sale() {
+        return Sale;
     }
 
 }

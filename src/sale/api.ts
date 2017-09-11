@@ -2,57 +2,35 @@ import * as joi from "joi";
 import { Api } from "../abstracts";
 import { Client, RequestOptions } from "../client";
 import {
-    webhookCreateRequestSchema,
-    webhookDeleteRequestSchema,
-    webhookEventTypeListRequestSchema,
-    webhookGetEventsRequestSchema,
-    webhookGetRequestSchema,
-    webhookIdSchema,
-    webhookListRequestSchema,
-    webhookUpdateRequestSchema,
+    saleGetRequestSchema,
+    saleIdSchema,
+    saleRefundRequestSchema,
 } from "./schemas";
-import { IWebhook, IWebhookRequestSchemas } from "./types";
 
-export class WebhookApi extends Api {
+export class SaleApi extends Api {
 
     public static paths = {
-        create: `/v1/notifications/webhooks`,
-        delete: `/v1/notifications/webhooks/{id}`,
-        events: `/v1/notifications/webhooks/{id}/event-types`,
-        get: `/v1/notifications/webhooks/{id}`,
-        list: `/v1/notifications/webhooks`,
-        types: `/v1/notifications/webhooks-event-types`,
-        update: `/v1/notifications/webhooks/{id}`,
+        get: `/v1/payments/sale/{id}`,
+        refund: `/v1/payments/sale/{id}/refund`,
     };
 
-    public static schemas: IWebhookRequestSchemas = {
-        create: webhookCreateRequestSchema,
-        delete: webhookDeleteRequestSchema,
-        events: webhookGetEventsRequestSchema,
-        get: webhookGetRequestSchema,
-        id: webhookIdSchema,
-        list: webhookListRequestSchema,
-        types: webhookEventTypeListRequestSchema,
-        update: webhookUpdateRequestSchema,
+    public static schemas = {
+        get: saleGetRequestSchema,
+        id: saleIdSchema,
+        refund: saleRefundRequestSchema,
     };
 
     constructor(client: Client) {
-        super(client, WebhookApi.schemas, WebhookApi.paths);
+        super(client, SaleApi.schemas, SaleApi.paths);
     }
 
-    public events(id: string, options: Partial<RequestOptions> = {}) {
-        if (WebhookApi.schemas.id) {
-            id = this.schemaValidate(id, WebhookApi.schemas.id);
+    public refund(id: string, options: Partial<RequestOptions> = {}) {
+        if (SaleApi.schemas.id) {
+            id = this.schemaValidate(id, SaleApi.schemas.id);
         }
 
-        options.uri = this.parsePath(WebhookApi.paths.events, { id });
-        options = this.schemaValidate(options, WebhookApi.schemas.events);
-        return this.client.request(options);
-    }
-
-    public types(options: Partial<RequestOptions> = {}) {
-        options.uri = WebhookApi.paths.types;
-        options = this.schemaValidate(options, WebhookApi.schemas.types);
+        options.uri = this.parsePath(SaleApi.paths.refund, { id });
+        options = this.schemaValidate(options, SaleApi.schemas.refund);
         return this.client.request(options);
     }
 }

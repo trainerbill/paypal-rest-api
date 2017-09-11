@@ -7,12 +7,6 @@ export * from "./types";
 export class Model<T> {
 
     public static api: any;
-
-    public static async get(id: string, options: Partial<RequestOptions> = {}) {
-        const response = await this.api.get(id, options);
-        return new this(response.body);
-    }
-
     private _api: any;
 
     constructor(public model: IModel & T) {
