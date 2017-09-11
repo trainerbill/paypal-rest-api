@@ -26,7 +26,7 @@ export class InvoiceModel extends Model<IInvoice> {
     }
 
     public static async list(options: Partial<RequestOptions> = {}) {
-        const response = await this.prototype.api.list(options);
+        const response = await this.api.list(options);
         return (response.body as IInvoiceListResponse).invoices.map((invoice) => {
             return new this(invoice);
         });

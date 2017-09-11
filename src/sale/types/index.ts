@@ -1,7 +1,7 @@
 import { Schema } from "joi";
 import { IModel } from "../../abstracts/model";
-import { ICurrency, ILink, IResponse } from "../../api/types";
-import { IResource } from "../../payment/types";
+import { ILink, IResponse } from "../../api/types";
+import { ICurrency, IResource } from "../../payment/types";
 
 export interface ISale extends IResource {
     readonly purchase_unit_reference_id?: string;

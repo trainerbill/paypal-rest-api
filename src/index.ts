@@ -4,6 +4,8 @@ export * from "./api";
 export * from "./client";
 export * from "./invoice";
 export * from "./oauth";
+export * from "./payment";
+export * from "./sale";
 export * from "./webhook";
 export * from "./webhookEvent";
 export default PayPalRestApi;
