@@ -4,6 +4,7 @@ export const clientHeadersSchema = joi.object({
     "Accept": joi.string().default("application/json"),
     "Accept-Language": joi.string().default("en_US"),
     "Content-Type": joi.string().default("application/json"),
+    "PayPal-Partner-Attribution-Id": joi.string().default("nodejs-paypal-rest-api"),
 });
 
 export const defaultRequestOptionsSchema = joi.object({
