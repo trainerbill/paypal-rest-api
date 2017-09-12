@@ -9,6 +9,11 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
 
     public static api: WebhookEventApi;
 
+    public static async get(id: string, options: Partial<RequestOptions> = {}) {
+        const response = await this.api.get(id, options);
+        return new this(response.body);
+    }
+
     public static async list(options: Partial<RequestOptions> = {}) {
         const response = await this.api.list(options);
         return (response.body as IWebhookEventListResponse).events.map((webhookEvent) => {

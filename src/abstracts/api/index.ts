@@ -4,7 +4,7 @@ import { IApiPaths, IApiSchemas, IPathReplacers, UpdateRequest } from "./types";
 
 export * from "./types";
 
-export class Api {
+export abstract class Api {
 
     constructor(private _client: Client, private _schemas: IApiSchemas, private _paths: IApiPaths) {}
 

@@ -17,6 +17,11 @@ export class InvoiceModel extends Model<IInvoice> {
     public static api: InvoiceApi;
     public static schema: Schema = invoiceSchema;
 
+    public static async get(id: string, options: Partial<RequestOptions> = {}) {
+        const response = await this.api.get(id, options);
+        return new this(response.body);
+    }
+
     public static async search(search: IInvoiceSearchRequest, options: Partial<RequestOptions> = {}) {
         options.body = search;
         const response = await this.api.search(options);

@@ -6,9 +6,9 @@ import { IModel } from "./types";
 
 export * from "./types";
 
-export class Model<T> {
+export abstract class Model<T> {
 
-    public static api: any;
+    public static api: Api;
     private _api: any;
 
     constructor(private _model: Partial<IModel & T>, private _schema?: Schema) {

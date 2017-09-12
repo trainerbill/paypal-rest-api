@@ -10,6 +10,11 @@ export class PaymentModel extends Model<IPayment> {
     public static api: PaymentApi;
     public static schema: Schema = paymentSchema;
 
+    public static async get(id: string, options: Partial<RequestOptions> = {}) {
+        const response = await this.api.get(id, options);
+        return new this(response.body);
+    }
+
     public static async list(options: Partial<RequestOptions> = {}) {
         const response = await this.api.list(options);
         return (response.body as IPaymentListResponse).payments.map((payment) => {
