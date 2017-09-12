@@ -1,0 +1,4 @@
+// tslint:disable
+export const mockWebhookString = '{"id":"38268946EW292853C","url":"https://middleman-test-trainerbill.c9users.io/paypal/webhooks/listen","event_types":[{"name":"INVOICING.INVOICE.CANCELLED","description":"An invoice has been cancelled","status":"ENABLED"},{"name":"INVOICING.INVOICE.PAID","description":"An invoice has been paid","status":"ENABLED"},{"name":"PAYMENT.SALE.COMPLETED","description":"A sale payment was completed","status":"ENABLED"}],"links":[{"href":"https://api.sandbox.paypal.com/v1/notifications/webhooks/38268946EW292853C","rel":"self","method":"GET"},{"href":"https://api.sandbox.paypal.com/v1/notifications/webhooks/38268946EW292853C","rel":"update","method":"PATCH"},{"href":"https://api.sandbox.paypal.com/v1/notifications/webhooks/38268946EW292853C","rel":"delete","method":"DELETE"}]}';
+export const mockWebhook = JSON.parse(mockWebhookString);
+// tslint:enable
