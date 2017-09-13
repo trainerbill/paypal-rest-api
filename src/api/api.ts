@@ -29,7 +29,7 @@ export class PayPalRestApi {
     }
 
     set config(config) {
-        const validateConfig = joi.validate(config, configurationSchema);
+        const validateConfig = joi.validate(config, configurationSchema, { allowUnknown: true });
         if (validateConfig.error) {
             throw validateConfig.error;
         }
