@@ -5,6 +5,13 @@ const paypal = new PayPalRestApi(config);
 async function example() {
     const invoice = new paypal.invoice({
         merchant_info: {
+            address: {
+                city: "Omaha",
+                country_code: "US",
+                line1: "test address",
+                postal_code: "68136",
+                state: "Nebraska",
+            },
             business_name: "testy",
         },
     });

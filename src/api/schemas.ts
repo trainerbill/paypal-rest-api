@@ -2,6 +2,35 @@ import * as joi from "joi";
 import * as us from "us";
 import { defaultRequestOptionsSchema } from "../client/schemas";
 
+const customJoi = joi.extend((cjoi: any) => ({
+    base: cjoi.string(),
+    language: {
+        state: "needs to be a 2 character state",
+    },
+    name: "string",
+    pre(value: string, state: any, options: any) {
+
+        if (options.convert && value.length > 2) {
+            value = us.lookup(value).abbr;
+        }
+
+        return value;
+    },
+    rules: [
+        {
+            name: "state",
+            setup(params: any) {
+
+                this._flags.state = true;
+            },
+            validate(params: any, value: any, state: any, options: any) {
+
+                return value;
+            },
+        },
+     ],
+}));
+
 export const clientIdSchema = joi.string().empty("");
 export const secretSchema = joi.string().empty("");
 
@@ -23,7 +52,7 @@ export const paypalAddressSchema = joi.object().keys({
     line2: joi.string().trim().empty("").optional(),
     phone: joi.string().trim().empty("").optional(),
     postal_code: joi.string().trim().empty("").required(),
-    state: joi.string().trim().empty("").valid(stateAbbreviations).required(),
+    state: customJoi.string().state().length(2).required(),
 });
 
 export const paypalPhoneSchema = joi.object().keys({
