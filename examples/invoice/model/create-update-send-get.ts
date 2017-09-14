@@ -4,6 +4,20 @@ import { config } from "../../config";
 const paypal = new PayPalRestApi(config);
 async function example() {
     const invoice = new paypal.invoice({
+        billing_info: [{
+            address: {
+                city: "Omaha",
+                country_code: "US",
+                line1: "test address",
+                phone: {
+                    country_code: "1",
+                    national_number: "4025001111",
+                },
+                postal_code: "68136",
+                state: "Nebraska",
+            },
+            business_name: "testy",
+        }],
         merchant_info: {
             address: {
                 city: "Omaha",

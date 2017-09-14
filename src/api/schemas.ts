@@ -45,19 +45,19 @@ export const stateAbbreviations = us.STATES.map((state: any) => {
     return state.abbr;
 });
 
+export const paypalPhoneSchema = joi.object().keys({
+    country_code: joi.string().regex(/^[0-9]{1,3}?$/).trim().empty("").default("1"),
+    national_number: joi.string().regex(/^[0-9]{1,14}?$/).trim().empty("").required(),
+});
+
 export const paypalAddressSchema = joi.object().keys({
     city: joi.string().trim().empty("").required(),
     country_code: joi.string().trim().empty("").max(2).default("US"),
     line1: joi.string().trim().empty("").required(),
     line2: joi.string().trim().empty("").optional(),
-    phone: joi.string().trim().empty("").optional(),
+    phone: paypalPhoneSchema.optional(),
     postal_code: joi.string().trim().empty("").required(),
     state: customJoi.string().state().length(2).required(),
-});
-
-export const paypalPhoneSchema = joi.object().keys({
-    country_code: joi.string().regex(/^[0-9]{1,3}?$/).trim().empty("").default("1"),
-    national_number: joi.string().regex(/^[0-9]{1,14}?$/).trim().empty("").required(),
 });
 
 export const paypalCurrencySchema = joi.object().keys({
