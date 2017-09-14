@@ -9,10 +9,6 @@ async function example() {
                 city: "Omaha",
                 country_code: "US",
                 line1: "test address",
-                phone: {
-                    country_code: "1",
-                    national_number: "4025001111",
-                },
                 postal_code: "68136",
                 state: "Nebraska",
             },
@@ -28,12 +24,22 @@ async function example() {
             },
             business_name: "testy",
         },
+        payment_term: {
+            term_type: "NET_15",
+        },
     });
     await invoice.create();
     await invoice.send();
     // tslint:disable-next-line:no-console
     console.log(`${invoice.model.status} should be "UNPAID" or "SENT"`);
     invoice.model.merchant_info.first_name = "Fred";
+    invoice.model.billing_info[0].address.phone = {
+        country_code: "1",
+        national_number: "4025001111",
+    };
+    invoice.model = {
+        ...invoice.model,
+    };
     await invoice.update();
     // tslint:disable-next-line:no-console
     console.log(`${invoice.model.merchant_info.first_name} should be "Fred"`);

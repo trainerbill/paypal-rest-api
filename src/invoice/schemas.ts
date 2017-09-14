@@ -73,7 +73,7 @@ export const invoiceItemsSchema = joi.object().keys({
 });
 
 export const invoiceTermSchema = joi.object().min(1).keys({
-    due_date: joi.date().empty("").optional(),
+    due_date: joi.string().empty("").optional(),
     term_type: joi.string().trim().empty("").valid([
         "DUE_ON_RECEIPT",
         "DUE_ON_DATE_SPECIFIED",

@@ -18,10 +18,10 @@ const customJoi = joi.extend((cjoi: any) => ({
     },
     rules: [
         {
-            name: "state",
+            name: "convertState",
             setup(params: any) {
 
-                this._flags.state = true;
+                this._flags.convertState = true;
             },
             validate(params: any, value: any, state: any, options: any) {
 
@@ -57,7 +57,7 @@ export const paypalAddressSchema = joi.object().keys({
     line2: joi.string().trim().empty("").optional(),
     phone: paypalPhoneSchema.optional(),
     postal_code: joi.string().trim().empty("").required(),
-    state: customJoi.string().state().length(2).required(),
+    state: customJoi.string().convertState().length(2).required(),
 });
 
 export const paypalCurrencySchema = joi.object().keys({
