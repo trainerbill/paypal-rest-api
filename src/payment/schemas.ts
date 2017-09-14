@@ -74,7 +74,7 @@ export const transactionSchema = joi.object().keys({
 
 export const paymentSchema = joi.object().keys({
     experience_profile_id: joi.string().trim().empty("").optional(),
-    intent: joi.date().empty("").valid(["sale", "authorize", "order"]).default("sale"),
+    intent: joi.string().empty("").valid(["sale", "authorize", "order"]).default("sale"),
     note_to_payer: joi.string().trim().empty("").max(165).optional(),
     payer: joi.object().keys({
        payment_method: joi.string().valid("paypal").default("paypal"),

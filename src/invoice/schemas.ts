@@ -62,7 +62,7 @@ export const invoiceGetRequestSchema = joi.object({
 export const invoiceIdSchema = joi.string().length(24);
 
 export const invoiceItemsSchema = joi.object().keys({
-    date: joi.date().empty("").optional(),
+    date: joi.string().empty("").optional(),
     description: joi.string().trim().empty("").max(1000).optional(),
     discount: common.paypalCostSchema.optional(),
     name: joi.string().trim().empty("").max(200).default("Item Name"),
