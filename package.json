@@ -28,8 +28,8 @@
     "watch:test": "yarn test --watch",
     "release": "yarn test && yarn run build && yarn publish --new-version",
     "release:quick": "git add -A && git commit -m 'Quick Release Patch' && yarn run release patch",
-    "postversion": "npm publish && git push && git push --tags",
-    "reinstall": "rimraf node_modules package-lock.json && npm install",
+    "postversion": "git push --follow-tags",
+    "reinstall": "rimraf node_modules package-lock.json && yarn install",
     "example": "ts-node"
   },
   "dependencies": {
