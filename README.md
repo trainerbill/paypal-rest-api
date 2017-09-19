@@ -33,7 +33,7 @@ This package is **NOT** supported by PayPal.  The current [PayPal Node SDK](http
 
 ## Installation
 ```
-npm install --save paypal-rest-api
+yarn add paypal-rest-api
 ```
 
 ## Typescript vs CommonJS
@@ -62,12 +62,12 @@ const paypal = new PayPalRestApi({
 It is **STRONGLY** recommended to use VSCode for the debugger and breakpoints.  You must npm install first.
 
 ### Command line
-use the npm run example script and pass in any file path from the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
+use the yarn run example script and pass in any file path from the [examples folder](https://github.com/trainerbill/paypal-rest-api/tree/master/examples).
 ```
 git clone https://github.com/trainerbill/paypal-rest-api.git
 cd paypal-rest-api
-npm install
-npm run example -- examples/invoice/model/create-update-send-get.ts
+yarn install
+yarn run example examples/invoice/model/create-update-send-get.ts
 ```
 
 ### VSCode
