@@ -2,7 +2,6 @@ language: node_js
 node_js:
   - 'node' # use latest stable nodejs version
   - '6'
-  - '4'
 script:
   - yarn build
   - yarn test
