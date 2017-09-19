@@ -37,7 +37,7 @@ export const secretSchema = joi.string().empty("");
 export const configurationSchema = joi.object({
     client_id: clientIdSchema.required(),
     client_secret: secretSchema.required(),
-    mode: joi.valid(["production", "sandbox"]).required(),
+    mode: joi.string().valid(["production", "sandbox"]).required(),
     requestOptions: defaultRequestOptionsSchema.default(),
 });
 
