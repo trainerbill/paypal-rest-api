@@ -7,7 +7,7 @@ async function example() {
         body: {
             page: 3,
             page_size: 2,
-            status: ["DRAFT"],
+            status: ["SENT", "UNPAID"],
         },
     });
     return response.body;

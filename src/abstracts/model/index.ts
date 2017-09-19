@@ -11,11 +11,7 @@ export abstract class Model<T> {
     public static api: Api;
     private _api: any;
 
-    constructor(private _model: Partial<IModel & T>, private _schema?: Schema) {
-        if (!(this.api)) {
-            throw new Error("Api static not set");
-        }
-    }
+    constructor(private _model: Partial<IModel & T>, private _schema?: Schema) { }
 
     get api() {
         return this._api;

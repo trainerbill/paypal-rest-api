@@ -4,7 +4,7 @@ import { config } from "../../config";
 const paypal = new PayPalRestApi(config);
 async function example() {
     // Returns model
-    const invoice = await paypal.invoice.get("INV2-ZVTT-ZGLF-CTSZ-PQQW");
+    const invoice = await paypal.invoice.get("INV2-NHZH-Q42S-XVXM-CK4U");
     return JSON.stringify(invoice.model);
 }
 

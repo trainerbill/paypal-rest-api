@@ -51,13 +51,15 @@ export const paypalPhoneSchema = joi.object().keys({
 });
 
 export const paypalAddressSchema = joi.object().keys({
-    city: joi.string().trim().empty("").required(),
-    country_code: joi.string().trim().empty("").max(2).default("US"),
-    line1: joi.string().trim().empty("").required(),
+    city: joi.string().trim().empty(""),
+    country_code: joi.string().trim().empty("").max(2),
+    line1: joi.string().trim().empty(""),
     line2: joi.string().trim().empty("").optional(),
-    postal_code: joi.string().trim().empty("").required(),
-    state: customJoi.string().convertState().length(2).required(),
-});
+    phone: paypalPhoneSchema.optional(),
+    postal_code: joi.string().trim().empty(""),
+    state: customJoi.string().convertState().length(2),
+})
+.and(["city", "country_code", "line1", "postal_code", "state"]);
 
 export const paypalCurrencySchema = joi.object().keys({
     currency: joi.string().max(3).trim().empty("").default("USD"),
