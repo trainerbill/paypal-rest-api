@@ -5,9 +5,9 @@ const paypal = new PayPalRestApi(config);
 async function example() {
     const response = await paypal.invoice.api.search({
         body: {
-            page: 3,
-            page_size: 2,
-            status: ["SENT", "UNPAID"],
+            page: 0,
+            page_size: 25,
+            status: ["SENT"],
         },
     });
     return response.body;
