@@ -38,7 +38,7 @@
     "@types/request": "^2.0.3",
     "@types/requestretry": "^1.12.1",
     "@types/uuid": "^3.4.2",
-    "joi": "^10.6.0",
+    "joi": "^11.0.2",
     "lodash.get": "^4.4.2",
     "request": "^2.81.0",
     "requestretry": "^1.12.2",
@@ -47,12 +47,12 @@
   },
   "devDependencies": {
     "@types/blue-tape": "^0.1.31",
-    "@types/node": "^7.0.0",
+    "@types/node": "^8.0.28",
     "@types/opn": "^3.0.28",
     "@types/sinon": "^2.3.3",
     "blue-tape": "^1.0.0",
     "coveralls": "^2.0.0",
-    "nyc": "^10.0.0",
+    "nyc": "^11.2.1",
     "opn": "^5.1.0",
     "rimraf": "^2.0.0",
     "sinon": "^3.2.1",
@@ -63,7 +63,7 @@
     "typescript": "^2.0.0"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "false": {}
 }
