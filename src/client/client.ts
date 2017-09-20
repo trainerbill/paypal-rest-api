@@ -12,8 +12,16 @@ export class Client {
 
     public oauth: Oauth;
 
-    constructor(private config: IConfigureOptions) {
-        this.oauth = new Oauth(this, config.client_id, config.client_secret);
+    constructor(private _config: IConfigureOptions) {
+        this.oauth = new Oauth(this, this.config.client_id, this.config.client_secret);
+    }
+
+    get config() {
+        return this._config;
+    }
+
+    set config(config) {
+        this._config = config;
     }
 
     public async request(options: Partial<RequestOptions>) {

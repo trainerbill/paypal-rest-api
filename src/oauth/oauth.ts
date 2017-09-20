@@ -18,7 +18,7 @@ export class Oauth extends Api {
         clientSecret: secretSchema,
     };
 
-    private token: IAccessToken;
+    public token: IAccessToken;
 
     constructor(client: Client, private _clientId: string, private _clientSecret: string) {
         super(client, {}, {});

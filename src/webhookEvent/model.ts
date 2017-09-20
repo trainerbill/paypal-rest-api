@@ -43,6 +43,7 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
             webhook_id: webhookid,
             ...WebhookEventModel.parseHeaders(headers),
         };
+
         const response = await this.api.verify(options);
         return JSON.parse(response.body);
     }

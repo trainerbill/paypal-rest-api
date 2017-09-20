@@ -6,7 +6,7 @@ export * from "./types";
 
 export abstract class Api {
 
-    constructor(private _client: Client, private _schemas: IApiSchemas, private _paths: IApiPaths) {}
+    constructor(private _client: Client, private _schemas: IApiSchemas, private _paths: any) {}
 
     get client() {
         return this._client;
@@ -86,17 +86,17 @@ export abstract class Api {
         return this.client.request(options);
     }
 
+    public parsePath(path: string, replacers: IPathReplacers) {
+        const rpath = path.replace("{id}", replacers.id);
+        return rpath;
+    }
+
     protected schemaValidate(what: any, schema: joi.Schema, additional: joi.ValidationOptions = {}) {
         const validate = joi.validate(what, schema, additional);
         if (validate.error) {
             throw validate.error;
         }
         return validate.value;
-    }
-
-    protected parsePath(path: string, replacers: IPathReplacers) {
-        const rpath = path.replace("{id}", replacers.id);
-        return rpath;
     }
 
 }

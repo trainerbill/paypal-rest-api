@@ -5,7 +5,7 @@ import { config } from "../../config";
 const paypal = new PayPalRestApi(config);
 async function example() {
     const response = await paypal.webhookEvent.verify(
-        mockInvoiceWebhookId,
+        "ta",
         mockInvoiceWebhookHeaders,
         mockInvoiceWebhookEvent,
     );
