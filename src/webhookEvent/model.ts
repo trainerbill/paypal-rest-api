@@ -44,8 +44,7 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
             ...WebhookEventModel.parseHeaders(headers),
         };
 
-        const response = await this.api.verify(options);
-        return JSON.parse(response.body);
+        return await this.api.verify(options);
     }
 
     public static async simulate(payload: IWebhookSimulateRequestSchema, options: Partial<RequestOptions> = {}) {
