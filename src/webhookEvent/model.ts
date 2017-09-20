@@ -9,6 +9,21 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
 
     public static api: WebhookEventApi;
 
+    public static parseHeaders(headers: any) {
+        const newHeaders: any = {};
+        Object.keys(headers).forEach((key) => {
+            newHeaders[key.toLowerCase()] = headers[key];
+        });
+
+        return {
+            auth_algo: newHeaders["paypal-auth-algo"],
+            cert_url: newHeaders["paypal-cert-url"],
+            transmission_id: newHeaders["paypal-transmission-id"],
+            transmission_sig: newHeaders["paypal-transmission-sig"],
+            transmission_time: newHeaders["paypal-transmission-time"],
+        };
+    }
+
     public static async get(id: string, options: Partial<RequestOptions> = {}) {
         const response = await this.api.get(id, options);
         return new this(response.body);
@@ -21,10 +36,15 @@ export class WebhookEventModel extends Model<IWebhookEvent> {
         });
     }
 
-    public static async verify(webhookEvent: string, options: Partial<RequestOptions> = {}) {
-        options.body = webhookEvent;
+    // tslint:disable-next-line:max-line-length
+    public static async verify(webhookid: string, headers: any, webhookEvent: string, options: Partial<RequestOptions> = {}) {
+        options.body = {
+            webhook_event: webhookEvent,
+            webhook_id: webhookid,
+            ...WebhookEventModel.parseHeaders(headers),
+        };
         const response = await this.api.verify(options);
-        return response.body;
+        return JSON.parse(response.body);
     }
 
     public static async simulate(payload: IWebhookSimulateRequestSchema, options: Partial<RequestOptions> = {}) {

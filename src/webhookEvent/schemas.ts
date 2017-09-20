@@ -31,7 +31,15 @@ export const webhookEventResendRequestSchema = joi.object({
 });
 
 export const webhookEventVerifyRequestSchema = joi.object({
-    body: joi.string().required(),
+    body: joi.object({
+        auth_algo: joi.string().required(),
+        cert_url: joi.string().required(),
+        transmission_id: joi.string().required(),
+        transmission_sig: joi.string().required(),
+        transmission_time: joi.string().required(),
+        webhook_event: joi.string().required(),
+        webhook_id: joi.string().required(),
+    }).required(),
     headers: joi.object({
         "Content-Type": joi.string().default("application/json"),
     }).default(),

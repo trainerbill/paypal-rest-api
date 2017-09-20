@@ -1,10 +1,15 @@
 import { PayPalRestApi } from "../../../src";
-import { mockInvoiceCreatedWebhookEventString } from "../../../src/webhookEvent";
+import { mockInvoiceWebhookEvent, mockInvoiceWebhookHeaders, mockInvoiceWebhookId } from "../../../src/webhookEvent";
 import { config } from "../../config";
 
 const paypal = new PayPalRestApi(config);
 async function example() {
-    return await paypal.webhookEvent.verify(mockInvoiceCreatedWebhookEventString);
+    const response = await paypal.webhookEvent.verify(
+        mockInvoiceWebhookId,
+        mockInvoiceWebhookHeaders,
+        mockInvoiceWebhookEvent,
+    );
+    return response;
 }
 
 // tslint:disable-next-line:no-console
