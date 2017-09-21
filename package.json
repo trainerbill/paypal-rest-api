@@ -1,6 +1,6 @@
 {
   "name": "paypal-rest-api",
-  "version": "0.0.47",
+  "version": "0.0.48",
   "description": "A typescript module for integrating with PayPal REST APIs.",
   "license": "MIT",
   "repository": "https://github.com/trainerbill/paypal-rest-api",
