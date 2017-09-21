@@ -56,7 +56,10 @@ export class InvoiceModel extends Model<IInvoice> {
 
     public async send(options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
+            throw new Error("Model id is invalid");
+        }
+        if (this.model.status !== "DRAFT") {
+            throw new Error("Invalid Status");
         }
         const response = await this.api.send(this.model.id, options);
         // Call get to refresh the model since send api does not return anything.
@@ -66,7 +69,11 @@ export class InvoiceModel extends Model<IInvoice> {
 
     public async remind(options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
+            throw new Error("Model id is invalid");
+        }
+        const validStatuses = ["SENT"];
+        if (validStatuses.indexOf(this.model.status) === -1) {
+            throw new Error("Invalid Status");
         }
         const response = await this.api.remind(this.model.id, options);
         return this;
@@ -74,7 +81,11 @@ export class InvoiceModel extends Model<IInvoice> {
 
     public async cancel(options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
+            throw new Error("Model id is invalid");
+        }
+        const validStatuses = ["SENT"];
+        if (validStatuses.indexOf(this.model.status) === -1) {
+            throw new Error("Invalid Status");
         }
         const response = await this.api.cancel(this.model.id, options);
         return this;
@@ -82,19 +93,30 @@ export class InvoiceModel extends Model<IInvoice> {
 
     // TODO:  This is kinda hacky but evidently you can't overload a methods arguments so just set the payload to model.
     public async update(payload = this.model, options?: Partial<RequestOptions>) {
+        const validStatuses = ["DRAFT", "UNPAID", "SENT"];
+        if (validStatuses.indexOf(this.model.status) === -1) {
+            throw new Error("Invalid Status");
+        }
         return super.update(this.model, options);
     }
 
     public async delete(options: Partial<RequestOptions> = {}) {
+        if (!this.model.id) {
+            throw new Error("Model id is invalid");
+        }
         if (this. model.status !== "DRAFT") {
-            throw new Error(`Only draft invoices can be deleted`);
+            throw new Error(`Invalid status`);
         }
         return super.delete(options);
     }
 
     public async recordPayment(payment: IInvoiceRecordPaymentRequest, options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
+            throw new Error("Model id is invalid");
+        }
+        const validStatuses = ["UNPAID", "SENT"];
+        if (validStatuses.indexOf(this.model.status) === -1) {
+            throw new Error("Invalid Status");
         }
         options.body = payment;
         const response = await this.api.recordPayment(this.model.id, options);
@@ -103,7 +125,11 @@ export class InvoiceModel extends Model<IInvoice> {
 
     public async recordRefund(refund: IInvoiceRecordRefundRequest = {}, options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
+            throw new Error("Model id is invalid");
+        }
+        const validStatuses = ["UNPAID", "SENT"];
+        if (validStatuses.indexOf(this.model.status) === -1) {
+            throw new Error("Invalid Status");
         }
         options.body = refund;
         const response = await this.api.recordRefund(this.model.id, options);
@@ -112,7 +138,7 @@ export class InvoiceModel extends Model<IInvoice> {
 
     public async qr(opts: IQrQueryParams = {}, options: Partial<RequestOptions> = {}) {
         if (!this.model.id) {
-            throw new Error("Model does not have an id.  Call create first");
+            throw new Error("Model id is invalid");
         }
         options.qs = opts;
         const response = await this.api.qr(this.model.id, options);
