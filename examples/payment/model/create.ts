@@ -17,8 +17,15 @@ async function example() {
     await payment.create();
     await payment.update([{
         op: "replace",
-        path: "/transactions/0/description",
-        value: "Updated Description for payment",
+        path: "/transactions/0/amount",
+        value: {
+            currency: "USD",
+            details: {
+                shipping: "5.00",
+                subtotal: "95.00",
+            },
+            total: "100.00",
+        },
     }]);
 
     return payment.model;
