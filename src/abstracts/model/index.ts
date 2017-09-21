@@ -34,8 +34,7 @@ export abstract class Model<T> {
 
     public async create(options: Partial<RequestOptions> = {}) {
         if (this.model.id) {
-            // Webhook is already created
-            return this;
+            throw new Error("Model has id");
         }
         options.body = this.model;
         const response = await this.api.create(options);
