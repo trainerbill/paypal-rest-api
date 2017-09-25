@@ -117,7 +117,7 @@ export const invoiceSchema = joi.object().keys({
         email: joi.string().trim().empty("").max(260).optional(),
         first_name: joi.string().trim().empty("").max(256).optional(),
         last_name: joi.string().trim().empty("").max(256).optional(),
-        phone: common.paypalPhoneSchema.optional(),
+        phone: common.paypalPhoneSchema.empty({}).optional(),
     }).optional(),
     merchant_memo: joi.string().trim().empty("").max(500).optional(),
     minimum_amount_due: common.paypalCurrencySchema.optional(),

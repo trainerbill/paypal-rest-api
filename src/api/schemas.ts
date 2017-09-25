@@ -55,7 +55,7 @@ export const paypalAddressSchema = joi.object().keys({
     country_code: joi.string().trim().empty("").max(2).default("US"),
     line1: joi.string().trim().empty("").optional(),
     line2: joi.string().trim().empty("").optional(),
-    phone: paypalPhoneSchema.optional(),
+    phone: paypalPhoneSchema.empty({}).optional(),
     postal_code: joi.string().trim().empty("").optional(),
     state: customJoi.string().trim().empty("").convertState().length(2).optional(),
 })
