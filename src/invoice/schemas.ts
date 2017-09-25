@@ -94,7 +94,7 @@ export const invoiceBillingInfoSchema = joi.object().keys({
     first_name: joi.string().trim().empty("").max(30).optional(),
     language: joi.string().trim().empty("").max(5).optional(),
     last_name: joi.string().trim().empty("").max(30).optional(),
-    phone: common.paypalPhoneSchema.optional(),
+    phone: common.paypalPhoneSchema.empty({}).optional(),
 });
 
 export const invoiceSchema = joi.object().keys({
