@@ -97,7 +97,7 @@ export class InvoiceModel extends Model<IInvoice> {
         if (validStatuses.indexOf(this.model.status) === -1) {
             throw new Error("Invalid Status");
         }
-        return super.update(this.model, options);
+        return super.update(payload, options);
     }
 
     public async delete(options: Partial<RequestOptions> = {}) {

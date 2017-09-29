@@ -64,10 +64,14 @@ export class Client {
             throw new Error(`Method ${options.method} is not configured.`);
         }
 
-        if (response.statusCode > 299) {
+        if (process.env.PAYPAL_DEBUG) {
             // tslint:disable
+            console.log(response.toJSON());
             console.log(`curl -X ${response.request.method.toUpperCase()} -v -H "Content-Type:application/json" -H "Authorization: ${response.request.headers.Authorization}" -d '${typeof response.request.body === "string" ? response.request.body : JSON.stringify(response.request.body)}' ${response.request.href}`);
             // tslint:enable
+        }
+
+        if (response.statusCode > 299) {
             throw new Error(JSON.stringify(response.body));
         }
         return response;
